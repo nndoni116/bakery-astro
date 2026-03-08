@@ -1,0 +1,153 @@
+---
+// src/components/Footer.astro
+// ──────────────────────────────────────────────────────────────
+// Three-column footer on desktop, stacked on mobile.
+// Contains: store address & hours | nav links | brand + copyright
+// ──────────────────────────────────────────────────────────────
+
+const currentYear = new Date().getFullYear();
+
+const hours = [
+  { days: '水曜〜金曜',       time: '08:00 – 17:00' },
+  { days: '土曜・日曜・祝日', time: '07:30 – 16:00' },
+  { days: '月曜・火曜',       time: '定休日'          },
+];
+
+const footerLinks = [
+  { label: 'Concept',  href: '#concept'  },
+  { label: 'Breads',   href: '#products' },
+  { label: 'Schedule', href: '#schedule' },
+  { label: 'Access',   href: '#access'   },
+];
+---
+
+<footer class="bg-kiln-DEFAULT text-wheat-DEFAULT/70">
+
+  <!-- ── Top rule ── -->
+  <div class="section-inner">
+    <div class="border-t border-amber-brand/20 pt-14 pb-10">
+
+      <!-- Three-column grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+
+        <!-- Col 1: Store info ───────────────────────────────── -->
+        <div>
+          <p class="eyebrow text-amber-brand mb-4">Store</p>
+
+          <address class="not-italic font-sans text-body-sm leading-relaxed text-wheat-DEFAULT/60 space-y-1">
+            <p class="font-medium text-wheat-DEFAULT/85">Boulangerie Kura</p>
+            <p>〒920-0000</p>
+            <p>石川県金沢市東山1丁目13-22</p>
+            <p>ひがし茶屋街 蔵通り沿い</p>
+          </address>
+
+          <!-- Hours -->
+          <div class="mt-6">
+            <p class="eyebrow text-amber-brand mb-3">Hours</p>
+            <dl class="space-y-1.5">
+              {hours.map(h => (
+                <div class="flex justify-between gap-4 font-sans text-[0.8rem]">
+                  <dt class="text-wheat-DEFAULT/55">{h.days}</dt>
+                  <dd class="text-wheat-DEFAULT/85 tabular-nums">{h.time}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+
+        <!-- Col 2: Navigation ──────────────────────────────── -->
+        <div class="md:justify-self-center">
+          <p class="eyebrow text-amber-brand mb-4">Navigation</p>
+          <nav aria-label="フッターナビ">
+            <ul class="space-y-2 list-none">
+              {footerLinks.map(link => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="
+                      font-display italic text-[1.05rem]
+                      text-wheat-DEFAULT/55 tracking-[0.02em]
+                      hover:text-amber-brand transition-colors duration-300
+                    "
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+
+        <!-- Col 3: Brand + SNS ─────────────────────────────── -->
+        <div class="md:justify-self-end md:text-right">
+          <a
+            href="#"
+            class="inline-block mb-2"
+            aria-label="Boulangerie Kura ホームへ"
+          >
+            <span class="font-display italic text-wheat-DEFAULT text-[1.6rem] tracking-[0.02em] leading-none">
+              Boulangerie<br/>Kura
+            </span>
+          </a>
+          <p class="font-sans text-[0.72rem] tracking-[0.1em] text-wheat-DEFAULT/30 mt-1">
+            石川県金沢市 / ハード系パン専門店
+          </p>
+
+          <!-- SNS icons -->
+          <div class="flex gap-4 mt-6 md:justify-end">
+            <!-- Instagram -->
+            <a
+              href="#"
+              class="text-wheat-DEFAULT/40 hover:text-amber-brand transition-colors duration-300"
+              aria-label="Instagram"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="1.5"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+              </svg>
+            </a>
+            <!-- X / Twitter -->
+            <a
+              href="#"
+              class="text-wheat-DEFAULT/40 hover:text-amber-brand transition-colors duration-300"
+              aria-label="X (Twitter)"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
+            <!-- Facebook -->
+            <a
+              href="#"
+              class="text-wheat-DEFAULT/40 hover:text-amber-brand transition-colors duration-300"
+              aria-label="Facebook"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="1.5"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+      </div><!-- /grid -->
+    </div><!-- /border-t -->
+  </div>
+
+  <!-- ── Bottom bar ── -->
+  <div class="border-t border-amber-brand/10">
+    <div class="section-inner flex flex-col sm:flex-row justify-between items-center py-5 gap-2">
+      <p class="font-sans text-[0.68rem] tracking-[0.1em] text-wheat-DEFAULT/25">
+        © {currentYear} Gemini Bakery / Tsukurutokoro Web
+      </p>
+      <p class="font-sans text-[0.65rem] tracking-[0.08em] text-wheat-DEFAULT/20">
+        Boulangerie Kura — All rights reserved.
+      </p>
+    </div>
+  </div>
+
+</footer>

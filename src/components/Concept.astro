@@ -1,169 +1,172 @@
 ---
 // src/components/Concept.astro
-// ─────────────────────────────────────────────────────────────
-// "Slow. Natural. Honest." philosophy section.
-// Four pillar cards rendered from a local data array.
-// ─────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+// "Our Philosophy" section — dark background, prose statement,
+// and four craft pillar cards in a responsive grid.
+// ──────────────────────────────────────────────────────────────
 
 interface Pillar {
-  number: string;
-  title:  string;
-  body:   string;
-  /** Inline SVG path data for the icon (viewBox 0 0 40 40) */
-  iconPaths: string;
+  num:   string;
+  title: string;
+  body:  string;
+  icon:  string;   // raw SVG path markup (viewBox="0 0 40 40")
 }
 
 const pillars: Pillar[] = [
   {
-    number: '01',
-    title:  '自家製酵母',
-    body:   '仙台の空気から育てた天然酵母。市販のイーストは一切使いません。酵母の個性が、パンの深みを生み出します。',
-    iconPaths: `
-      <circle cx="20" cy="20" r="14"/>
-      <path d="M20 8 C20 8 14 14 14 20 C14 26 20 32 20 32"/>
-      <path d="M20 8 C20 8 26 14 26 20 C26 26 20 32 20 32"/>
-      <line x1="8" y1="20" x2="32" y2="20"/>
+    num:  '01',
+    title: '自家製酵母',
+    body:  '金沢の空気の中で育てた天然酵母のみを使用。市販のインスタントイーストは一切使いません。酵母一粒一粒の個性が、パンの複雑な香りと旨みを生み出します。',
+    icon: `
+      <circle cx="20" cy="20" r="13" stroke-width="1.5"/>
+      <path d="M20 9 C20 9 14 14 14 20 C14 26 20 31 20 31" stroke-width="1.5"/>
+      <path d="M20 9 C20 9 26 14 26 20 C26 26 20 31 20 31" stroke-width="1.5"/>
+      <line x1="9" y1="20" x2="31" y2="20" stroke-width="1.5"/>
     `,
   },
   {
-    number: '02',
-    title:  '24時間低温発酵',
-    body:   '冷蔵庫でゆっくりと一夜を過ごした生地は、芳醇な香りと複雑な味わいを持ちます。焦りは禁物。',
-    iconPaths: `
-      <circle cx="20" cy="20" r="3"/>
-      <path d="M20 4 L20 9"/><path d="M20 31 L20 36"/>
-      <path d="M4 20 L9 20"/><path d="M31 20 L36 20"/>
-      <path d="M7.5 7.5 L11 11"/><path d="M29 29 L32.5 32.5"/>
-      <path d="M32.5 7.5 L29 11"/><path d="M11 29 L7.5 32.5"/>
+    num:  '02',
+    title: '24時間低温発酵',
+    body:  '仕込んだ生地は5〜8℃の低温環境でゆっくりと一昼夜かけて発酵させます。急いで作られたパンには出せない、芳醇な酸味と奥深いコクがここで育まれます。',
+    icon: `
+      <circle cx="20" cy="22" r="12" stroke-width="1.5"/>
+      <polyline points="20,14 20,22 25,26" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="16" y1="8" x2="24" y2="8" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="20" y1="8" x2="20" y2="10" stroke-width="1.5" stroke-linecap="round"/>
     `,
   },
   {
-    number: '03',
-    title:  '薪窯・石床焼成',
-    body:   '250度以上に熱した石床が、生地に一気に熱を与えます。クラストの気泡、独特の焦げ目——これが窯の仕事です。',
-    iconPaths: `
-      <path d="M6 32 C6 32 8 28 14 26 C18 24.5 22 25 26 22 C30 19 32 14 34 10"/>
-      <path d="M10 36 L30 36"/>
-      <path d="M14 30 L14 36"/><path d="M26 30 L26 36"/><path d="M20 28 L20 36"/>
+    num:  '03',
+    title: '薪窯 / 石床焼成',
+    body:  '国内でも数少ない、本格的な薪窯を使用。石床は300℃近くまで蓄熱し、生地の底面に一気に熱を与えます。これが他では出せない、パリパリのクラストを生む秘訣です。',
+    icon: `
+      <path d="M7 33 C7 33 9 28 16 25 C20 23 24 24 28 21 C32 18 34 12 36 8" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="10" y1="36" x2="30" y2="36" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="13" y1="30" x2="13" y2="36" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="27" y1="30" x2="27" y2="36" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="20" y1="28" x2="20" y2="36" stroke-width="1.5" stroke-linecap="round"/>
     `,
   },
   {
-    number: '04',
-    title:  '国産小麦へのこだわり',
-    body:   '北海道産「ゆめちから」「はるゆたか」を中心に、粉の個性を活かした配合を季節ごとに調整しています。',
-    iconPaths: `
-      <path d="M10 28 C10 28 13 18 20 16 C27 14 30 20 30 20"/>
-      <ellipse cx="20" cy="26" rx="12" ry="8"/>
-      <path d="M12 22 Q16 18 20 22 Q24 26 28 22"/>
+    num:  '04',
+    title: '北海道産 国産小麦',
+    body:  '「ゆめちから」「はるゆたか」など、北海道産の最高品質の小麦粉を使用。粉の個性を活かした配合は、季節や湿度、その日の酵母の状態によって微調整されます。',
+    icon: `
+      <path d="M20 5 L20 35" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M20 8  C20 8  14 11 14 16 C14 21 20 18 20 18" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M20 14 C20 14 26 17 26 22 C26 27 20 24 20 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     `,
   },
 ];
 ---
 
-<section id="concept">
-  <div class="section-inner">
-    <span class="section-label fade-in">— Our Philosophy</span>
-    <h2 class="section-title fade-in">Slow. Natural.<br/>Honest.</h2>
-    <p class="section-title-jp fade-in">ゆっくりと、素直に、誠実に。</p>
-    <div class="divider fade-in"></div>
+<section
+  id="concept"
+  class="section-pad bg-kiln-DEFAULT relative overflow-hidden"
+  aria-labelledby="concept-heading"
+>
+  <!-- Ambient glow -->
+  <div
+    class="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full pointer-events-none"
+    style="background: radial-gradient(circle, rgba(107,58,26,0.35) 0%, transparent 70%);"
+    aria-hidden="true"
+  ></div>
 
-    <p class="concept-lead fade-in">
-      Boulangerie Kura のパンは、急がない。<br/>
-      小麦粉、水、塩、そして時間——それだけが材料です。<br/>
-      24時間以上かけて低温発酵させた生地は、<br/>
-      窯の中で驚くほど豊かな表情を見せてくれます。
-    </p>
+  <div class="section-inner relative z-10">
 
-    <div class="concept-grid">
+    <!-- Section heading -->
+    <div class="max-w-prose mb-16 md:mb-20 reveal">
+      <span class="eyebrow text-amber-brand">— Our Philosophy</span>
+      <span class="section-rule"></span>
+
+      <h2
+        id="concept-heading"
+        class="font-display italic text-display-md text-wheat-DEFAULT mt-2 leading-tight"
+      >
+        Slow. Honest.<br/>
+        <em class="not-italic text-amber-brand">Uncompromising.</em>
+      </h2>
+      <p class="font-sans text-[clamp(0.82rem,1vw,0.9rem)] tracking-[0.12em] text-wheat-DEFAULT/40 uppercase mt-1">
+        ゆっくりと、誠実に、妥協なく。
+      </p>
+    </div>
+
+    <!-- Prose statement -->
+    <div class="grid md:grid-cols-2 gap-12 mb-20 items-start">
+      <p
+        class="
+          font-serif text-body-lg text-wheat-DEFAULT/75 leading-[2.1]
+          reveal reveal-delay-1
+        "
+      >
+        Boulangerie Kura が作るパンの材料は、小麦粉・水・塩・酵母、それだけです。
+        添加物も、ショートニングも、使いません。<br/><br/>
+        それでもなお、毎日同じパンは焼けない。天気、気温、水の状態、酵母の機嫌——
+        職人はそのすべてを読んで、今日一日だけのパンを焼きます。
+      </p>
+      <div class="reveal reveal-delay-2">
+        <!-- Pull-quote / stat block -->
+        <div class="border-l-2 border-amber-brand/40 pl-8 py-2 space-y-8">
+          {[
+            { num: '24h+', label: '低温長時間発酵' },
+            { num: '300℃', label: '薪窯 最大庫内温度' },
+            { num: '100%', label: '国産・自家製酵母使用率' },
+          ].map(stat => (
+            <div>
+              <p class="font-display italic text-[2.6rem] text-amber-brand leading-none tracking-tight">
+                {stat.num}
+              </p>
+              <p class="font-sans text-[0.75rem] uppercase tracking-[0.18em] text-wheat-DEFAULT/40 mt-1">
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Pillar cards grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-px bg-amber-brand/10">
       {pillars.map((p, i) => (
-        <div class={`concept-card fade-in${i > 0 ? ` fade-in-delay-${i}` : ''}`}>
-          <div class="concept-number">{p.number}</div>
+        <div
+          class={`
+            concept-card
+            bg-kiln-DEFAULT hover:bg-kiln-800/80
+            p-8 transition-colors duration-400
+            reveal reveal-delay-${i + 1}
+          `}
+        >
+          <!-- Number watermark -->
+          <p class="font-display italic text-[3.8rem] text-amber-brand/10 leading-none select-none mb-3">
+            {p.num}
+          </p>
+          <!-- Icon -->
           <svg
-            class="concept-icon"
+            class="w-9 h-9 mb-5 text-amber-brand"
             viewBox="0 0 40 40"
             fill="none"
             stroke="currentColor"
-            stroke-width="1.5"
             stroke-linecap="round"
             aria-hidden="true"
-            set:html={p.iconPaths}
+            set:html={p.icon}
           />
-          <h3>{p.title}</h3>
-          <p>{p.body}</p>
+          <!-- Text -->
+          <h3 class="font-serif text-[1rem] font-medium text-wheat-DEFAULT mb-3">
+            {p.title}
+          </h3>
+          <p class="font-sans text-body-sm text-wheat-DEFAULT/50 leading-[1.85]">
+            {p.body}
+          </p>
         </div>
       ))}
     </div>
+
   </div>
 </section>
 
 <style>
-  #concept {
-    background: var(--color-crust);
-    position:   relative;
-    overflow:   hidden;
-  }
-  #concept::before {
-    content:       '';
-    position:      absolute;
-    top: -80px; right: -80px;
-    width:         400px;
-    height:        400px;
-    border-radius: 50%;
-    background:    radial-gradient(circle, rgba(107,58,42,0.4) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  /* Override shared section-title colour for dark background */
-  #concept .section-title    { color: var(--color-wheat); }
-  #concept .section-title-jp { color: rgba(245,237,216,0.6); }
-
-  .concept-lead {
-    font-family:  var(--font-serif-jp);
-    font-size:    clamp(1rem, 2vw, 1.15rem);
-    color:        rgba(245, 237, 216, 0.85);
-    max-width:    640px;
-    line-height:  2.1;
-    margin-bottom: 72px;
-  }
-
-  /* ── Card grid ─────────────────────────────────────────── */
-  .concept-grid {
-    display:               grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap:                   2px;
-  }
   .concept-card {
-    background:  rgba(255,255,255,0.04);
-    border:      1px solid rgba(255,255,255,0.06);
-    padding:     40px 32px;
-    transition:  background 0.3s;
-  }
-  .concept-card:hover { background: rgba(193, 127, 59, 0.08); }
-
-  .concept-number {
-    font-family:  var(--font-serif-en);
-    font-size:    3.5rem;
-    font-weight:  900;
-    color:        rgba(193,127,59,0.15);
-    line-height:  1;
-    margin-bottom: 16px;
-  }
-  .concept-icon {
-    width:         40px;
-    height:        40px;
-    margin-bottom: 20px;
-    color:         var(--color-amber);
-  }
-  .concept-card h3 {
-    font-family:   var(--font-serif-jp);
-    font-size:     1.05rem;
-    font-weight:   500;
-    color:         var(--color-wheat);
-    margin-bottom: 12px;
-  }
-  .concept-card p {
-    font-size:  0.82rem;
-    color:      rgba(245,237,216,0.55);
-    line-height: 1.9;
+    /* Subtle inset top border to feel like panels stacked in a kiln */
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
   }
 </style>

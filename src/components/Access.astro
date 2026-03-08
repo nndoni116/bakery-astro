@@ -1,55 +1,58 @@
 ---
 // src/components/Access.astro
-// ─────────────────────────────────────────────────────────────
-// Store information: address, hours, transport, contact,
-// SNS links, decorative map placeholder, and monthly calendar.
-// ─────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+// Store access section.
+// Left column : address, access directions, contact info, SNS.
+// Right column: Google Maps embed placeholder + monthly calendar.
+//
+// To embed a real Google Map, replace the <div class="map-placeholder">
+// block with an <iframe> from Google Maps Embed API.
+// ──────────────────────────────────────────────────────────────
 
-// ── Calendar data ─────────────────────────────────────────────
-// 'open' | 'closed' | 'today' | 'empty'
+// March 2026 calendar data
 type DayStatus = 'open' | 'closed' | 'today' | 'empty';
-
 interface CalDay { label: string; status: DayStatus; }
 
-// March 2026 — starts on Sunday
-// Mon & Tue = closed, Wed–Sun = open, today = 8 (Sun)
+// March 2026 starts on Sunday (0-indexed day of week = 0)
+// Closed: Mon, Tue. Open: Wed–Sun. Today = March 9 (Mon — closed in reality but
+// we mark it as today for display; status shows truthfully closed)
 const march2026: CalDay[] = [
   // Week 1
-  { label: '1',  status: 'open'   },
-  { label: '2',  status: 'closed' },
-  { label: '3',  status: 'closed' },
-  { label: '4',  status: 'open'   },
-  { label: '5',  status: 'open'   },
-  { label: '6',  status: 'open'   },
-  { label: '7',  status: 'open'   },
+  { label: '1',  status: 'open'   }, // Sun
+  { label: '2',  status: 'closed' }, // Mon
+  { label: '3',  status: 'closed' }, // Tue
+  { label: '4',  status: 'open'   }, // Wed
+  { label: '5',  status: 'open'   }, // Thu
+  { label: '6',  status: 'open'   }, // Fri
+  { label: '7',  status: 'open'   }, // Sat
   // Week 2
-  { label: '8',  status: 'today'  },
-  { label: '9',  status: 'closed' },
-  { label: '10', status: 'closed' },
-  { label: '11', status: 'open'   },
-  { label: '12', status: 'open'   },
-  { label: '13', status: 'open'   },
-  { label: '14', status: 'open'   },
+  { label: '8',  status: 'open'   }, // Sun
+  { label: '9',  status: 'today'  }, // Mon ← today (closed)
+  { label: '10', status: 'closed' }, // Tue
+  { label: '11', status: 'open'   }, // Wed
+  { label: '12', status: 'open'   }, // Thu
+  { label: '13', status: 'open'   }, // Fri
+  { label: '14', status: 'open'   }, // Sat
   // Week 3
-  { label: '15', status: 'open'   },
-  { label: '16', status: 'closed' },
-  { label: '17', status: 'closed' },
-  { label: '18', status: 'open'   },
-  { label: '19', status: 'open'   },
-  { label: '20', status: 'open'   },
-  { label: '21', status: 'open'   },
+  { label: '15', status: 'open'   }, // Sun
+  { label: '16', status: 'closed' }, // Mon
+  { label: '17', status: 'closed' }, // Tue
+  { label: '18', status: 'open'   }, // Wed
+  { label: '19', status: 'open'   }, // Thu
+  { label: '20', status: 'open'   }, // Fri
+  { label: '21', status: 'open'   }, // Sat
   // Week 4
-  { label: '22', status: 'open'   },
-  { label: '23', status: 'closed' },
-  { label: '24', status: 'closed' },
-  { label: '25', status: 'open'   },
-  { label: '26', status: 'open'   },
-  { label: '27', status: 'open'   },
-  { label: '28', status: 'open'   },
+  { label: '22', status: 'open'   }, // Sun
+  { label: '23', status: 'closed' }, // Mon
+  { label: '24', status: 'closed' }, // Tue
+  { label: '25', status: 'open'   }, // Wed
+  { label: '26', status: 'open'   }, // Thu
+  { label: '27', status: 'open'   }, // Fri
+  { label: '28', status: 'open'   }, // Sat
   // Week 5
-  { label: '29', status: 'open'   },
-  { label: '30', status: 'closed' },
-  { label: '31', status: 'closed' },
+  { label: '29', status: 'open'   }, // Sun
+  { label: '30', status: 'closed' }, // Mon
+  { label: '31', status: 'closed' }, // Tue
   { label: '',   status: 'empty'  },
   { label: '',   status: 'empty'  },
   { label: '',   status: 'empty'  },
@@ -57,267 +60,275 @@ const march2026: CalDay[] = [
 ];
 
 const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+
+// Status → Tailwind class
+const dayClass: Record<DayStatus, string> = {
+  open:   'bg-amber-brand/15 text-crust-700 font-medium',
+  closed: 'text-smoke-light/40 line-through',
+  today:  'bg-amber-brand text-kiln-800 font-bold',
+  empty:  '',
+};
 ---
 
-<section id="access">
+<section
+  id="access"
+  class="section-pad bg-wheat-cream"
+  aria-labelledby="access-heading"
+>
   <div class="section-inner">
-    <span class="section-label fade-in">— Find Us</span>
-    <h2 class="section-title fade-in">Come to<br/>Our Bakery</h2>
-    <p class="section-title-jp fade-in">店舗案内・アクセス</p>
-    <div class="divider fade-in"></div>
 
-    <div class="access-grid">
+    <!-- Section header -->
+    <div class="mb-14 reveal">
+      <span class="eyebrow text-amber-brand">— Find Us</span>
+      <span class="section-rule"></span>
+      <h2
+        id="access-heading"
+        class="font-display italic text-display-md text-crust-DEFAULT mt-1 leading-tight"
+      >
+        Come to<br/>
+        <em class="not-italic text-amber-brand">Our Bakery</em>
+      </h2>
+      <p class="font-sans text-[0.8rem] tracking-[0.1em] text-smoke-light uppercase mt-1">
+        店舗案内・アクセス
+      </p>
+    </div>
 
-      <!-- ── Left column: store info ── -->
-      <div class="access-info fade-in">
-        <h3>住所</h3>
-        <address>
-          〒980-0000<br/>
-          宮城県仙台市青葉区一番町1-2-3<br/>
-          蔵ビル 1F
-        </address>
+    <!-- Two-column layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
-        <h3>営業時間・定休日</h3>
-        <p>
-          水〜日曜　06:00〜17:00（売り切れ次第終了）<br/>
-          月曜・火曜　定休日
-        </p>
+      <!-- ── Left: Store info ───────────────────────────────── -->
+      <div class="space-y-9 reveal">
 
-        <h3>アクセス</h3>
-        <p>
-          仙台市地下鉄東西線「大町西公園駅」1番出口 徒歩3分<br/>
-          市バス「一番町」停留所 徒歩1分<br/>
-          ※ 駐車場なし。近隣コインパーキングをご利用ください。
-        </p>
-
-        <h3>お問い合わせ</h3>
-        <p>
-          Tel: <a href="tel:022-000-0000">022-000-0000</a><br/>
-          Mail: <a href="mailto:hello@boulangerie-kura.jp">hello@boulangerie-kura.jp</a>
-        </p>
-
-        <h3>SNS</h3>
-        <div class="sns-links">
-          <a href="#" class="sns-link">
-            <!-- Instagram -->
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="1.5"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-              <circle cx="12" cy="12" r="4"/>
-              <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-            </svg>
-            @boulangerie_kura
-          </a>
+        <!-- Address -->
+        <div>
+          <h3 class="info-heading">住所</h3>
+          <address class="not-italic font-sans text-body-sm text-smoke-DEFAULT leading-[2]">
+            〒920-0831<br/>
+            石川県金沢市東山1丁目13-22<br/>
+            ひがし茶屋街 蔵通り沿い
+          </address>
         </div>
-        <div class="sns-links" style="margin-top:8px;">
-          <a href="#" class="sns-link">
-            <!-- X / Twitter -->
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-            </svg>
-            @kura_pain
-          </a>
+
+        <!-- Hours -->
+        <div>
+          <h3 class="info-heading">営業時間</h3>
+          <dl class="font-sans text-body-sm text-smoke-DEFAULT space-y-1.5">
+            <div class="flex gap-4">
+              <dt class="text-smoke-light min-w-[7rem]">水曜〜金曜</dt>
+              <dd>08:00 – 17:00</dd>
+            </div>
+            <div class="flex gap-4">
+              <dt class="text-smoke-light min-w-[7rem]">土曜・日曜・祝日</dt>
+              <dd>07:30 – 16:00</dd>
+            </div>
+            <div class="flex gap-4 text-smoke-light">
+              <dt class="min-w-[7rem]">月曜・火曜</dt>
+              <dd>定休日</dd>
+            </div>
+            <p class="text-smoke-light/70 text-[0.78rem] mt-2 leading-relaxed">
+              ※ パンがなくなり次第、早めに閉店する場合があります。
+            </p>
+          </dl>
         </div>
-      </div>
 
-      <!-- ── Right column: map + calendar ── -->
-      <div class="fade-in fade-in-delay-1">
+        <!-- Access directions -->
+        <div>
+          <h3 class="info-heading">アクセス</h3>
+          <ul class="font-sans text-body-sm text-smoke-DEFAULT space-y-1.5 leading-[2]">
+            <li class="flex items-start gap-2">
+              <span class="mt-2 w-1 h-1 rounded-full bg-amber-brand flex-shrink-0"></span>
+              北陸鉄道バス「橋場町」停留所 徒歩3分
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-2 w-1 h-1 rounded-full bg-amber-brand flex-shrink-0"></span>
+              金沢市内循環バス「東山」停留所 徒歩5分
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="mt-2 w-1 h-1 rounded-full bg-amber-brand flex-shrink-0"></span>
+              ※ 専用駐車場なし。近隣のコインパーキングをご利用ください。
+            </li>
+          </ul>
+        </div>
 
-        <!-- Decorative map placeholder -->
-        <div class="map-wrap">
-          <div class="map-overlay">
-            <svg class="map-pin-icon" width="36" height="36" viewBox="0 0 24 24" fill="none"
-                 stroke="currentColor" stroke-width="1.5"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-            <p class="map-label">Boulangerie Kura</p>
-            <p class="map-sublabel">仙台市青葉区一番町1-2-3</p>
+        <!-- Contact -->
+        <div>
+          <h3 class="info-heading">お問い合わせ</h3>
+          <div class="font-sans text-body-sm text-smoke-DEFAULT space-y-1">
+            <p>
+              Tel:
+              <a href="tel:076-200-0000" class="text-amber-brand hover:underline ml-1">
+                076-200-0000
+              </a>
+            </p>
+            <p>
+              Email:
+              <a href="mailto:hello@boulangerie-kura.jp" class="text-amber-brand hover:underline ml-1">
+                hello@boulangerie-kura.jp
+              </a>
+            </p>
           </div>
-          <!-- Abstract street grid -->
+        </div>
+
+        <!-- SNS -->
+        <div>
+          <h3 class="info-heading">SNS</h3>
+          <div class="flex gap-5">
+            <a href="#" class="sns-link" aria-label="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+              </svg>
+              <span>@boulangerie_kura</span>
+            </a>
+          </div>
+          <div class="flex gap-5 mt-2">
+            <a href="#" class="sns-link" aria-label="X / Twitter">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+              <span>@kura_pain</span>
+            </a>
+          </div>
+        </div>
+
+      </div><!-- /left -->
+
+      <!-- ── Right: Map + Calendar ──────────────────────────── -->
+      <div class="space-y-10 reveal reveal-delay-2">
+
+        <!-- Google Maps placeholder
+             Replace this entire block with your <iframe> embed -->
+        <div class="map-placeholder relative overflow-hidden" style="aspect-ratio:4/3;">
+          <!-- Abstract street grid decoration -->
           <svg
-            style="position:absolute;inset:0;width:100%;height:100%;opacity:0.12;"
+            class="absolute inset-0 w-full h-full opacity-[0.11]"
             viewBox="0 0 400 300"
             preserveAspectRatio="xMidYMid slice"
             aria-hidden="true"
           >
-            <line x1="0" y1="100" x2="400" y2="100" stroke="#6B3A2A" stroke-width="1"/>
-            <line x1="0" y1="150" x2="400" y2="150" stroke="#6B3A2A" stroke-width="1"/>
-            <line x1="0" y1="200" x2="400" y2="200" stroke="#6B3A2A" stroke-width="1"/>
-            <line x1="100" y1="0" x2="100" y2="300" stroke="#6B3A2A" stroke-width="1"/>
-            <line x1="200" y1="0" x2="200" y2="300" stroke="#6B3A2A" stroke-width="1"/>
-            <line x1="300" y1="0" x2="300" y2="300" stroke="#6B3A2A" stroke-width="1"/>
-            <!-- Major roads -->
-            <line x1="0"   y1="150" x2="400" y2="150" stroke="#6B3A2A" stroke-width="4"/>
-            <line x1="160" y1="0"   x2="160" y2="300" stroke="#6B3A2A" stroke-width="3"/>
+            <line x1="0" y1="100" x2="400" y2="100" stroke="#6b3a2a" stroke-width="1"/>
+            <line x1="0" y1="150" x2="400" y2="150" stroke="#6b3a2a" stroke-width="4"/>
+            <line x1="0" y1="200" x2="400" y2="200" stroke="#6b3a2a" stroke-width="1"/>
+            <line x1="100" y1="0"   x2="100" y2="300" stroke="#6b3a2a" stroke-width="1"/>
+            <line x1="155" y1="0"   x2="155" y2="300" stroke="#6b3a2a" stroke-width="3"/>
+            <line x1="260" y1="0"   x2="260" y2="300" stroke="#6b3a2a" stroke-width="1"/>
+            <line x1="340" y1="0"   x2="340" y2="300" stroke="#6b3a2a" stroke-width="1"/>
           </svg>
+          <!-- Pin icon + label -->
+          <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10">
+            <svg
+              class="text-amber-brand"
+              width="38" height="38" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.4"
+              stroke-linecap="round" stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <div class="text-center">
+              <p class="font-serif text-[0.9rem] text-smoke-DEFAULT">Boulangerie Kura</p>
+              <p class="font-sans text-[0.72rem] text-smoke-light mt-0.5">石川県金沢市東山1丁目13-22</p>
+            </div>
+            <a
+              href="https://maps.google.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="
+                font-sans text-[0.68rem] uppercase tracking-[0.18em]
+                text-amber-brand border border-amber-brand/40
+                px-4 py-1.5 mt-1
+                hover:bg-amber-brand hover:text-kiln-800
+                transition-colors duration-300
+              "
+            >
+              Google マップで開く
+            </a>
+          </div>
         </div>
 
         <!-- Monthly calendar -->
-        <div class="calendar-wrap">
-          <p class="calendar-title">March 2026 — 営業カレンダー</p>
+        <div>
+          <p class="font-display italic text-[0.78rem] text-smoke-light tracking-[0.1em] mb-3">
+            March 2026 — 営業カレンダー
+          </p>
 
           <div class="calendar-grid">
+            <!-- Day-of-week headers -->
             {weekdays.map(d => (
-              <div class="cal-header">{d}</div>
+              <div class="cal-header font-sans text-[0.64rem] text-smoke-light/60 text-center pb-1.5">
+                {d}
+              </div>
             ))}
+            <!-- Day cells -->
             {march2026.map(day => (
-              <div class={`cal-day ${day.status}`}>{day.label}</div>
+              <div
+                class={`
+                  cal-day
+                  aspect-square flex items-center justify-center
+                  text-[0.72rem] font-sans rounded-sm
+                  ${dayClass[day.status]}
+                `}
+              >
+                {day.label}
+              </div>
             ))}
           </div>
 
           <!-- Legend -->
-          <div class="cal-legend">
-            <div class="cal-legend-item">
-              <span class="legend-swatch open-swatch"></span>営業日
-            </div>
-            <div class="cal-legend-item">
-              <span class="legend-swatch today-swatch"></span>本日
-            </div>
-            <div class="cal-legend-item">
-              <span class="legend-swatch closed-swatch"></span>定休日
-            </div>
+          <div class="flex gap-5 mt-4">
+            {[
+              { color: 'bg-amber-brand/15', label: '営業日' },
+              { color: 'bg-amber-brand',   label: '本日'   },
+              { color: 'bg-smoke-light/10', label: '定休日' },
+            ].map(item => (
+              <div class="flex items-center gap-1.5 font-sans text-[0.68rem] text-smoke-light">
+                <span class={`inline-block w-3 h-3 rounded-sm ${item.color}`}></span>
+                {item.label}
+              </div>
+            ))}
           </div>
         </div>
 
-      </div>
-    </div>
-  </div>
+      </div><!-- /right -->
+    </div><!-- /grid -->
+  </div><!-- /section-inner -->
 </section>
 
 <style>
-  #access { background: var(--color-cream); }
-
-  /* ── Two-column layout ──────────────────────────────────── */
-  .access-grid {
-    display:               grid;
-    grid-template-columns: 1fr 1fr;
-    gap:                   64px;
-    align-items:           start;
-  }
-
-  /* ── Info column ────────────────────────────────────────── */
-  .access-info h3 {
-    font-family:    var(--font-serif-jp);
-    font-size:      1rem;
+  /* Info section heading */
+  .info-heading {
+    font-family:    var(--f-serif);
+    font-size:      0.78rem;
     font-weight:    500;
-    color:          var(--color-ash);
-    letter-spacing: 0.1em;
-    margin-bottom:  12px;
-    margin-top:     32px;
+    letter-spacing: 0.12em;
+    color:          var(--c-ash);
+    text-transform: uppercase;
+    margin-bottom:  0.6rem;
   }
-  .access-info h3:first-child { margin-top: 0; }
-  .access-info p,
-  .access-info address {
-    font-style:  normal;
-    font-size:   0.88rem;
-    color:       var(--color-smoke);
-    line-height: 2;
-  }
-  .access-info a        { color: var(--color-amber); transition: opacity 0.2s; }
-  .access-info a:hover  { opacity: 0.7; }
 
-  /* SNS */
-  .sns-links { display: flex; gap: 16px; margin-top: 12px; }
+  /* SNS link row */
   .sns-link {
     display:     flex;
     align-items: center;
-    gap:         8px;
-    font-size:   0.8rem;
-    color:       var(--color-smoke);
-    transition:  color 0.2s;
+    gap:         0.5rem;
+    font-size:   0.82rem;
+    color:       var(--c-smoke);
+    transition:  color 0.25s;
   }
-  .sns-link:hover { color: var(--color-amber); }
+  .sns-link:hover { color: var(--c-amber); }
 
-  /* ── Map placeholder ────────────────────────────────────── */
-  .map-wrap {
-    aspect-ratio:    4/3;
-    background:      var(--color-wheat);
-    border:          1px solid rgba(44,26,14,0.1);
-    position:        relative;
-    overflow:        hidden;
-    display:         flex;
-    align-items:     center;
-    justify-content: center;
-    margin-bottom:   40px;
-  }
-  .map-overlay { text-align: center; position: relative; z-index: 1; }
-  .map-pin-icon { color: var(--color-amber); margin: 0 auto 12px; }
-  .map-label {
-    font-family: var(--font-serif-jp);
-    font-size:   0.85rem;
-    color:       var(--color-smoke);
-  }
-  .map-sublabel {
-    font-size:  0.75rem;
-    color:      var(--color-ash);
-    margin-top: 4px;
+  /* Map placeholder */
+  .map-placeholder {
+    background: var(--c-wheat);
+    border:     1px solid rgba(44,26,14,0.08);
   }
 
-  /* ── Calendar ───────────────────────────────────────────── */
-  .calendar-wrap { }
-  .calendar-title {
-    font-family:    var(--font-serif-en);
-    font-style:     italic;
-    font-size:      0.78rem;
-    color:          var(--color-ash);
-    letter-spacing: 0.1em;
-    margin-bottom:  10px;
-  }
+  /* Calendar grid: 7 equal columns */
   .calendar-grid {
     display:               grid;
     grid-template-columns: repeat(7, 1fr);
-    gap:                   2px;
-  }
-  .cal-header {
-    font-size:  0.68rem;
-    color:      var(--color-ash);
-    text-align: center;
-    padding:    6px 0;
-    font-family: var(--font-sans);
-  }
-  .cal-day {
-    aspect-ratio:    1;
-    display:         flex;
-    align-items:     center;
-    justify-content: center;
-    font-size:       0.75rem;
-    font-family:     var(--font-sans);
-    color:           var(--color-smoke);
-    border-radius:   2px;
-  }
-  .cal-day.open   { background: rgba(193,127,59,0.15); color: var(--color-brown); font-weight: 500; }
-  .cal-day.closed { color: rgba(140,128,120,0.4); text-decoration: line-through; }
-  .cal-day.today  { background: var(--color-amber); color: #fff; font-weight: 700; }
-  .cal-day.empty  { background: transparent; }
-
-  /* Legend */
-  .cal-legend {
-    display:    flex;
-    gap:        20px;
-    margin-top: 12px;
-  }
-  .cal-legend-item {
-    display:     flex;
-    align-items: center;
-    gap:         6px;
-    font-size:   0.72rem;
-    color:       var(--color-ash);
-  }
-  .legend-swatch {
-    display:       inline-block;
-    width:         12px;
-    height:        12px;
-    border-radius: 2px;
-  }
-  .open-swatch   { background: rgba(193,127,59,0.2); }
-  .today-swatch  { background: var(--color-amber); }
-  .closed-swatch { background: rgba(140,128,120,0.15); }
-
-  /* ── Responsive ─────────────────────────────────────────── */
-  @media (max-width: 768px) {
-    .access-grid { grid-template-columns: 1fr; gap: 40px; }
+    gap:                   3px;
   }
 </style>

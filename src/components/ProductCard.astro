@@ -1,118 +1,114 @@
 ---
 // src/components/ProductCard.astro
-// ─────────────────────────────────────────────────────────────
-// A single bread product card.
-// All data is injected by the parent <Products> via props,
-// making it trivial to add, remove or reorder products.
-// ─────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+// Reusable product card. All display data is injected via Props
+// so the parent (Products.astro) drives the content.
+//
+// Props:
+//  name       — English product name       e.g. "Baguette"
+//  nameJp     — Japanese subtitle          e.g. "バゲット・トラディション"
+//  price      — Price string               e.g. "¥340"
+//  priceNote  — Optional price qualifier   e.g. "/ 1/2カット ¥580"
+//  desc       — Japanese prose description
+//  badge      — Optional badge text        e.g. "Signature"
+//  svgBg      — Complete <svg> string for the card illustration
+//  delay      — Tailwind reveal-delay class e.g. "reveal-delay-2"
+// ──────────────────────────────────────────────────────────────
 export interface Props {
-  /** English display name, e.g. "Baguette" */
-  name:    string;
-  /** Japanese subtitle, e.g. "バゲット・トラディション" */
-  nameJp:  string;
-  /** Short prose description (Japanese) */
-  desc:    string;
-  /** Price string, e.g. "¥340" */
-  price:   string;
-  /** Optional badge text, e.g. "Signature" | "Popular" */
-  badge?:  string;
-  /** Inline SVG markup for the product illustration (full <svg> element) */
-  svgIllustration: string;
-  /** Stagger delay class, e.g. "" | "fade-in-delay-1" */
-  delay?:  string;
+  name:       string;
+  nameJp:     string;
+  price:      string;
+  priceNote?: string;
+  desc:       string;
+  badge?:     string;
+  svgBg:      string;
+  delay?:     string;
 }
 
-const { name, nameJp, desc, price, badge, svgIllustration, delay = '' } = Astro.props;
+const {
+  name,
+  nameJp,
+  price,
+  priceNote,
+  desc,
+  badge,
+  svgBg,
+  delay = '',
+} = Astro.props;
 ---
 
-<div class={`product-card fade-in ${delay}`}>
-  <div class="product-img-wrap">
-    <Fragment set:html={svgIllustration} />
-    {badge && <span class="product-badge">{badge}</span>}
+<article class={`product-card group reveal ${delay}`}>
+
+  <!-- ── Illustration area ────────────────────────────────── -->
+  <div class="product-img overflow-hidden relative bg-kiln-800" style="height: 268px;">
+    <!-- SVG illustration injected by parent -->
+    <div
+      class="w-full h-full transition-transform duration-700 ease-out-expo group-hover:scale-[1.05]"
+      aria-hidden="true"
+    >
+      <Fragment set:html={svgBg} />
+    </div>
+
+    <!-- Badge -->
+    {badge && (
+      <span class="
+        absolute top-4 right-4
+        font-display italic text-[0.65rem] tracking-[0.1em]
+        bg-amber-brand text-kiln-800
+        px-3 py-1
+      ">
+        {badge}
+      </span>
+    )}
   </div>
-  <div class="product-body">
-    <p class="product-name">{name}</p>
-    <p class="product-name-jp">{nameJp}</p>
-    <div class="product-divider"></div>
-    <p class="product-desc">{desc}</p>
-    <p class="product-price">{price}</p>
+
+  <!-- ── Body ─────────────────────────────────────────────── -->
+  <div class="product-body p-7">
+
+    <!-- Name -->
+    <h3 class="font-display italic text-[1.55rem] text-crust-DEFAULT leading-tight tracking-[-0.01em]">
+      {name}
+    </h3>
+    <p class="font-sans text-[0.78rem] text-smoke-light mt-1 tracking-[0.04em]">
+      {nameJp}
+    </p>
+
+    <!-- Rule -->
+    <div class="w-8 h-px bg-amber-brand my-4"></div>
+
+    <!-- Description -->
+    <p class="font-sans text-body-sm text-smoke-DEFAULT leading-[1.88]">
+      {desc}
+    </p>
+
+    <!-- Price -->
+    <p class="mt-5">
+      <span class="font-display italic text-[1.2rem] text-amber-brand tracking-tight">
+        {price}
+      </span>
+      {priceNote && (
+        <span class="font-sans text-[0.75rem] text-smoke-light ml-2">
+          {priceNote}
+        </span>
+      )}
+    </p>
+
   </div>
-</div>
+</article>
 
 <style>
-  /* ── Card shell ─────────────────────────────────────────── */
   .product-card {
-    background:  var(--color-cream);
-    overflow:    hidden;
-    cursor:      pointer;
-    transition:  box-shadow 0.4s;
+    background:  var(--c-cream);
+    transition:  box-shadow 0.4s ease;
   }
   .product-card:hover {
-    box-shadow: 0 20px 60px rgba(44,26,14,0.18);
+    box-shadow: 0 16px 52px rgba(44, 26, 14, 0.16);
   }
 
-  /* ── Illustration area ──────────────────────────────────── */
-  .product-img-wrap {
-    height:    260px;
-    overflow:  hidden;
-    position:  relative;
-    background: var(--color-smoke);
-  }
-  /* Target the SVG injected by set:html */
-  .product-img-wrap > svg {
-    width:      100%;
-    height:     100%;
-    transition: transform 0.6s cubic-bezier(.22,1,.36,1), filter 0.4s;
-  }
-  .product-card:hover .product-img-wrap > svg {
-    transform: scale(1.06);
-    filter:    brightness(1.08);
-  }
-
-  /* ── Badge ──────────────────────────────────────────────── */
-  .product-badge {
-    position:       absolute;
-    top: 16px; right: 16px;
-    background:     var(--color-amber);
-    color:          var(--color-crust);
-    font-family:    var(--font-serif-en);
-    font-size:      0.65rem;
-    font-style:     italic;
-    letter-spacing: 0.1em;
-    padding:        4px 12px;
-  }
-
-  /* ── Body copy ──────────────────────────────────────────── */
-  .product-body       { padding: 28px 28px 32px; }
-  .product-name {
-    font-family: var(--font-serif-en);
-    font-size:   1.5rem;
-    font-weight: 700;
-    font-style:  italic;
-    color:       var(--color-crust);
-  }
-  .product-name-jp {
-    font-family:  var(--font-serif-jp);
-    font-size:    0.85rem;
-    color:        var(--color-ash);
-    margin-top:   4px;
-  }
-  .product-divider {
-    width:      32px;
-    height:     1px;
-    background: var(--color-amber);
-    margin:     16px 0;
-  }
-  .product-desc {
-    font-size:   0.82rem;
-    color:       var(--color-smoke);
-    line-height: 1.9;
-  }
-  .product-price {
-    font-family: var(--font-serif-en);
-    font-size:   1.1rem;
-    font-weight: 700;
-    color:       var(--color-amber);
-    margin-top:  16px;
+  /* Ensure injected SVG fills its container */
+  .product-img svg {
+    width:   100%;
+    height:  100%;
+    display: block;
   }
 </style>

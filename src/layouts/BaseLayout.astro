@@ -1,125 +1,130 @@
 ---
 // src/layouts/BaseLayout.astro
-// ─────────────────────────────────────────────────────────────
-// Wraps every page with <head>, navigation, footer and all
-// client-side interaction scripts (scroll effects, hamburger).
-// ─────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+// Shared page shell.
+// • Imports Google Fonts and global CSS.
+// • Renders <Header> above the <slot> and <Footer> below.
+// • Houses the IntersectionObserver script for scroll-reveal.
+// ──────────────────────────────────────────────────────────────
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
 export interface Props {
   title?:       string;
   description?: string;
+  ogImage?:     string;
 }
 
 const {
-  title       = 'Boulangerie Kura | ハード系パン専門店',
-  description = '自家製酵母と24時間発酵。窯から生まれる、本物のパン。',
+  title       = 'Boulangerie Kura | ハード系パン専門店 — 金沢',
+  description = '自家製酵母と24時間低温発酵、薪窯焼成。石川県金沢市ひがし茶屋街のハード系パン専門店 Boulangerie Kura（ブーランジェリー・クラ）。',
+  ogImage     = '/og-image.jpg',
 } = Astro.props;
+
+const canonicalURL = Astro.url;
 ---
 
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" class="scroll-smooth">
 <head>
+  <!-- ── Essential meta ──────────────────────────────────── -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{title}</title>
   <meta name="description" content={description} />
+  <link rel="canonical" href={canonicalURL} />
 
-  <!-- Google Fonts -->
+  <!-- ── Open Graph ─────────────────────────────────────── -->
+  <meta property="og:title"       content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image"       content={ogImage} />
+  <meta property="og:type"        content="website" />
+  <meta property="og:locale"      content="ja_JP" />
+
+  <!-- ── Favicon (replace with actual assets) ───────────── -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- ── Google Fonts ───────────────────────────────────── -->
+  <!--
+    Cormorant Garamond  — display / headlines (English, italic)
+    Noto Serif JP       — Japanese serif body (concept prose, etc.)
+    Noto Sans JP        — Japanese sans-serif body (UI, labels, etc.)
+  -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700;1,900&family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap"
     rel="stylesheet"
   />
+
+  <title>{title}</title>
 </head>
 
-<body>
+<body class="min-h-screen flex flex-col">
 
-  <!-- ===== Navigation ===== -->
-  <nav id="nav">
-    <a href="#hero" class="nav-logo">Boulangerie Kura</a>
+  <!-- ── Fixed navigation header ────────────────────────── -->
+  <Header />
 
-    <ul class="nav-links">
-      <li><a href="#concept">Concept</a></li>
-      <li><a href="#products">Breads</a></li>
-      <li><a href="#schedule">Schedule</a></li>
-      <li><a href="#access">Access</a></li>
-    </ul>
+  <!-- ── Page content ───────────────────────────────────── -->
+  <main id="main-content" class="flex-1 pt-0">
+    <slot />
+  </main>
 
-    <button class="hamburger" id="hamburger" aria-label="メニューを開く">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-  </nav>
-
-  <!-- Mobile Overlay Menu -->
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#concept"  id="mc-concept">Concept</a>
-    <a href="#products" id="mc-products">Breads</a>
-    <a href="#schedule" id="mc-schedule">Schedule</a>
-    <a href="#access"   id="mc-access">Access</a>
-  </div>
-
-  <!-- ===== Page Content (injected by each page) ===== -->
-  <slot />
-
-  <!-- ===== Footer ===== -->
-  <footer>
-    <p class="footer-logo">Boulangerie Kura</p>
-    <p class="footer-tagline">窯から生まれる、本物のパン。</p>
-    <p class="footer-copy">© 2026 Boulangerie Kura. All rights reserved.</p>
-  </footer>
+  <!-- ── Footer ─────────────────────────────────────────── -->
+  <Footer />
 
 </body>
 </html>
 
-<!-- ===== Client-side Scripts ===== -->
+<!-- ════════════════════════════════════════════════════════════
+     Client-side Scripts
+     ════════════════════════════════════════════════════════════ -->
 <script>
-  // ── Navigation: scroll-triggered background ─────────────────
-  const nav = document.getElementById('nav') as HTMLElement;
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
-  }, { passive: true });
-
-  // ── Hamburger menu ──────────────────────────────────────────
-  const hamburger  = document.getElementById('hamburger')  as HTMLButtonElement;
-  const mobileMenu = document.getElementById('mobileMenu') as HTMLDivElement;
-
-  function openMenu()  {
-    hamburger.classList.add('open');
-    mobileMenu.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeMenu() {
-    hamburger.classList.remove('open');
-    mobileMenu.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  hamburger.addEventListener('click', () => {
-    hamburger.classList.contains('open') ? closeMenu() : openMenu();
-  });
-
-  // Close mobile menu when any link is clicked
-  ['mc-concept', 'mc-products', 'mc-schedule', 'mc-access'].forEach(id => {
-    document.getElementById(id)?.addEventListener('click', closeMenu);
-  });
-
-  // ── Scroll Fade-In (IntersectionObserver) ───────────────────
-  const fadeObserver = new IntersectionObserver(
+  // ── 1. Scroll-reveal (IntersectionObserver) ─────────────────
+  // Adds `.is-visible` to any element with class `.reveal` when
+  // it enters the viewport. Transition styles live in global.css.
+  const revealObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          // Unobserve after reveal to save resources
-          fadeObserver.unobserve(entry.target);
+          entry.target.classList.add('is-visible');
+          // Stop watching once revealed — saves memory
+          revealObserver.unobserve(entry.target);
         }
       });
     },
-    { threshold: 0.12 }
+    {
+      threshold:  0.10,
+      rootMargin: '0px 0px -40px 0px',
+    }
   );
 
-  document.querySelectorAll<HTMLElement>('.fade-in').forEach(el => {
-    fadeObserver.observe(el);
+  document.querySelectorAll<HTMLElement>('.reveal').forEach(el => {
+    revealObserver.observe(el);
   });
+
+  // ── 2. Active nav link highlight on scroll ───────────────────
+  // Highlights the nav link whose section is currently in view.
+  const sections = document.querySelectorAll<HTMLElement>('section[id]');
+  const navLinks  = document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]');
+
+  function updateActiveLink() {
+    let currentId = '';
+    sections.forEach(section => {
+      const sectionTop = section.getBoundingClientRect().top;
+      if (sectionTop <= 120) currentId = section.id;
+    });
+
+    navLinks.forEach(link => {
+      const href = link.getAttribute('href')?.slice(1) ?? '';
+      if (href === currentId) {
+        link.classList.add('text-amber-brand', '!opacity-100');
+      } else {
+        link.classList.remove('text-amber-brand', '!opacity-100');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', updateActiveLink, { passive: true });
+  updateActiveLink(); // run on page load
 </script>

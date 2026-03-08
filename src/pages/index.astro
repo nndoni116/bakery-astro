@@ -1,25 +1,26 @@
 ---
 // src/pages/index.astro
-// ─────────────────────────────────────────────────────────────
-// Top page — imports BaseLayout and all section components,
-// then composes them in order. Adding / reordering sections
-// is as simple as moving a component import and its JSX tag.
-// ─────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+// Top page (landing page).
+// This file's only job is to declare the page metadata and
+// assemble the section components in the correct order.
+//
+// To add a new section: import its component here and place
+// the tag in the desired position inside <BaseLayout>.
+// ──────────────────────────────────────────────────────────────
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero       from '../components/Hero.astro';
 import Concept    from '../components/Concept.astro';
 import Products   from '../components/Products.astro';
-import Schedule   from '../components/Schedule.astro';
 import Access     from '../components/Access.astro';
 ---
 
 <BaseLayout
-  title="Boulangerie Kura | ハード系パン専門店"
-  description="自家製酵母と24時間発酵。窯から生まれる、本物のパン。仙台・一番町。"
+  title="Boulangerie Kura | ハード系パン専門店 — 石川県金沢市"
+  description="自家製酵母と24時間低温発酵、薪窯焼成。石川県金沢市ひがし茶屋街のハード系パン専門店 Boulangerie Kura（ブーランジェリー・クラ）。"
 >
   <Hero />
   <Concept />
   <Products />
-  <Schedule />
   <Access />
 </BaseLayout>

@@ -1,79 +1,148 @@
+// tailwind.config.mjs
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte}'],
+  content: ['./src/**/*.{astro,html,js,jsx,ts,tsx}'],
   theme: {
     extend: {
-      // ── Color Palette ──────────────────────────────────────────────
+      // ── Brand Color Palette ─────────────────────────────────────
+      // Inspired by bread crust, wheat flour and the warmth of a kiln.
       colors: {
-        kura: {
-          crust:    '#2C1A0E', // 深焦げ茶
-          brown:    '#6B3A2A', // 窯茶
-          amber:    '#C17F3B', // 琥珀
-          wheat:    '#F5EDD8', // 小麦生成り
-          cream:    '#FAF6EE', // クリーム白
-          charcoal: '#1E1E1E', // 窯の黒
-          smoke:    '#3A3530', // スモーク
-          ash:      '#8C8078', // 灰
+        crust: {
+          50:  '#fdf6ef',
+          100: '#f9e8d3',
+          200: '#f2cfa2',
+          300: '#e9b06a',
+          400: '#df8e3a',
+          500: '#d4721f',
+          600: '#bc5917',
+          700: '#9c4116',
+          800: '#7e3519',
+          900: '#672e18',
+          950: '#3c1509',
+          DEFAULT: '#3c1509',  // 深焦げ茶 — primary dark
+        },
+        amber: {
+          50:  '#fffbeb',
+          100: '#fef3c7',
+          200: '#fde68a',
+          300: '#fcd34d',
+          400: '#fbbf24',
+          500: '#f59e0b',
+          600: '#d97706',
+          700: '#b45309',
+          800: '#92400e',
+          900: '#78350f',
+          DEFAULT: '#c17f3b',  // 琥珀 — accent
+          brand: '#c17f3b',
+        },
+        wheat: {
+          50:  '#fefdf9',
+          100: '#fdf8ee',
+          200: '#faf0d7',
+          300: '#f5e4b8',
+          400: '#efd291',
+          500: '#e6bc62',
+          600: '#d4a03a',
+          700: '#b3822a',
+          800: '#926626',
+          900: '#785425',
+          DEFAULT: '#f5edd8',  // 小麦生成り — light background
+          cream: '#faf6ee',    // クリーム白
+        },
+        smoke: {
+          DEFAULT: '#3a3530',  // スモークグレー — body text
+          light:   '#8c8078',  // 灰 — muted text
+        },
+        kiln: {
+          DEFAULT: '#1e1e1e',  // 窯の黒 — darkest
+          800:     '#2c1a0e',  // 深みのある黒茶
         },
       },
 
-      // ── Typography ─────────────────────────────────────────────────
+      // ── Typography ─────────────────────────────────────────────
       fontFamily: {
-        'serif-en': ['"Playfair Display"', 'Georgia', 'serif'],
-        'serif-jp': ['"Noto Serif JP"', 'serif'],
-        'sans-jp':  ['"Noto Sans JP"', 'sans-serif'],
+        display: ['"Cormorant Garamond"', '"Playfair Display"', 'Georgia', 'serif'],
+        serif:   ['"Noto Serif JP"', 'Georgia', 'serif'],
+        sans:    ['"Noto Sans JP"', '"Hiragino Kaku Gothic ProN"', 'sans-serif'],
+        mono:    ['"JetBrains Mono"', 'monospace'],
       },
 
-      // ── Font Sizes (fluid clamp values) ────────────────────────────
+      // ── Fluid Font Sizes ───────────────────────────────────────
       fontSize: {
-        'display':  ['clamp(3rem, 8vw, 7rem)',   { lineHeight: '1.0',  letterSpacing: '-0.02em' }],
-        'heading':  ['clamp(2rem, 4vw, 3.2rem)', { lineHeight: '1.15' }],
-        'subhead':  ['clamp(1.1rem, 2vw, 1.4rem)', { lineHeight: '1.5' }],
-        'label':    ['0.70rem',  { letterSpacing: '0.25em' }],
-        'eyebrow':  ['0.72rem',  { letterSpacing: '0.3em'  }],
-        'caption':  ['0.75rem',  { letterSpacing: '0.15em' }],
-        'body-sm':  ['0.82rem',  { lineHeight: '1.9' }],
-        'price':    ['1.1rem',   { fontWeight: '700' }],
+        'display-xl': ['clamp(3.5rem, 9vw, 8rem)',   { lineHeight: '0.95', letterSpacing: '-0.03em' }],
+        'display-lg': ['clamp(2.5rem, 6vw, 5.5rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
+        'display-md': ['clamp(1.8rem, 4vw, 3rem)',   { lineHeight: '1.10', letterSpacing: '-0.01em' }],
+        'eyebrow':    ['0.68rem', { lineHeight: '1', letterSpacing: '0.28em' }],
+        'label':      ['0.72rem', { lineHeight: '1', letterSpacing: '0.2em'  }],
+        'body-lg':    ['1.05rem', { lineHeight: '1.9' }],
+        'body-sm':    ['0.85rem', { lineHeight: '1.8' }],
       },
 
-      // ── Spacing ────────────────────────────────────────────────────
+      // ── Spacing ────────────────────────────────────────────────
       spacing: {
-        section:    '120px',
-        'section-sm': '80px',
+        '18':  '4.5rem',
+        '22':  '5.5rem',
+        '30':  '7.5rem',
+        '34':  '8.5rem',
+        'section':    '7.5rem',   // 120px standard section padding
+        'section-sm': '5rem',     // 80px mobile section padding
       },
 
-      // ── Max Widths ─────────────────────────────────────────────────
       maxWidth: {
-        content: '1100px',
-        prose:   '640px',
-        narrow:  '480px',
+        content: '1140px',
+        prose:   '680px',
+        narrow:  '520px',
       },
 
-      // ── Box Shadow ─────────────────────────────────────────────────
+      // ── Shadows ────────────────────────────────────────────────
       boxShadow: {
-        'card-hover': '0 20px 60px rgba(44, 26, 14, 0.18)',
-        'nav':        '0 2px 24px rgba(0, 0, 0, 0.3)',
+        'card':       '0 4px 24px rgba(44, 26, 14, 0.10)',
+        'card-hover': '0 12px 48px rgba(44, 26, 14, 0.18)',
+        'nav':        '0 1px 32px rgba(0, 0, 0, 0.25)',
+        'inset-top':  'inset 0 1px 0 rgba(255,255,255,0.08)',
       },
 
-      // ── Backdrop Blur ──────────────────────────────────────────────
-      backdropBlur: {
-        nav: '8px',
+      // ── Borders ────────────────────────────────────────────────
+      borderColor: {
+        DEFAULT: 'rgba(193, 127, 59, 0.2)',
       },
 
-      // ── Transition Timing ──────────────────────────────────────────
+      // ── Transitions ────────────────────────────────────────────
       transitionTimingFunction: {
-        'out-expo': 'cubic-bezier(0.22, 1, 0.36, 1)',
+        'out-expo':    'cubic-bezier(0.19, 1, 0.22, 1)',
+        'in-out-circ': 'cubic-bezier(0.85, 0, 0.15, 1)',
+      },
+      transitionDuration: {
+        '400': '400ms',
+        '600': '600ms',
+        '800': '800ms',
+        '1000': '1000ms',
       },
 
-      // ── Animation ─────────────────────────────────────────────────
+      // ── Keyframes & Animations ─────────────────────────────────
       keyframes: {
-        scrollPulse: {
-          '0%, 100%': { opacity: '0.3', transform: 'scaleY(1)'   },
-          '50%':      { opacity: '1',   transform: 'scaleY(1.2)' },
+        'fade-up': {
+          '0%':   { opacity: '0', transform: 'translateY(28px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)'    },
+        },
+        'fade-in': {
+          '0%':   { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        'line-grow': {
+          '0%':   { transform: 'scaleX(0)', transformOrigin: 'left' },
+          '100%': { transform: 'scaleX(1)', transformOrigin: 'left' },
+        },
+        'scroll-bounce': {
+          '0%, 100%': { transform: 'translateY(0)',   opacity: '0.4' },
+          '50%':      { transform: 'translateY(6px)', opacity: '1'   },
         },
       },
       animation: {
-        'scroll-pulse': 'scrollPulse 2s ease-in-out infinite',
+        'fade-up':      'fade-up 0.9s cubic-bezier(0.19,1,0.22,1) both',
+        'fade-in':      'fade-in 0.8s ease both',
+        'line-grow':    'line-grow 1.2s cubic-bezier(0.19,1,0.22,1) both',
+        'scroll-bounce':'scroll-bounce 1.8s ease-in-out infinite',
       },
     },
   },

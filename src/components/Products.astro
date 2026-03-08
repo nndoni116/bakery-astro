@@ -1,188 +1,180 @@
 ---
 // src/components/Products.astro
-// ─────────────────────────────────────────────────────────────
-// Owns the canonical product data and renders a responsive
-// grid of <ProductCard> components.
-// To add a new bread: append an entry to the `products` array.
-// ─────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+// • Defines the product data array (the single source of truth).
+// • Renders a responsive grid of <ProductCard> components.
+// • Includes the daily baking schedule timeline below the grid.
+// ──────────────────────────────────────────────────────────────
 import ProductCard from './ProductCard.astro';
-import type { Props as ProductProps } from './ProductCard.astro';
+import type { Props as CardProps } from './ProductCard.astro';
 
-// SVG illustrations are defined as template literals here so
-// that the data stays co-located with the component that owns it.
-// Each string is a complete <svg> element that will be injected
-// into the card via set:html.
+// ── SVG bread illustrations ──────────────────────────────────
+// Each is a complete <svg> element injected via set:html.
 
-const baguetteSvg = `
-<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="bg1" cx="50%" cy="50%">
-      <stop offset="0%"   stop-color="#8B5A2B"/>
-      <stop offset="100%" stop-color="#3D1F0A"/>
-    </radialGradient>
-    <radialGradient id="crust1" cx="50%" cy="40%">
-      <stop offset="0%"   stop-color="#C4813A"/>
-      <stop offset="60%"  stop-color="#A0622A"/>
-      <stop offset="100%" stop-color="#6B3A1A"/>
-    </radialGradient>
-  </defs>
-  <rect width="400" height="260" fill="url(#bg1)"/>
-  <ellipse cx="200" cy="210" rx="160" ry="20" fill="rgba(0,0,0,0.35)"/>
-  <ellipse cx="200" cy="140" rx="160" ry="55" fill="url(#crust1)"/>
-  <ellipse cx="200" cy="118" rx="140" ry="28" fill="rgba(220,160,80,0.25)"/>
-  <line x1="110" y1="95"  x2="135" y2="185" stroke="#5A2E0A" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
-  <line x1="152" y1="88"  x2="177" y2="192" stroke="#5A2E0A" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
-  <line x1="194" y1="86"  x2="219" y2="194" stroke="#5A2E0A" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
-  <line x1="236" y1="88"  x2="261" y2="192" stroke="#5A2E0A" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
-  <line x1="278" y1="95"  x2="298" y2="185" stroke="#5A2E0A" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
-  <line x1="111" y1="93"  x2="136" y2="183" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="153" y1="86"  x2="178" y2="190" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="195" y1="84"  x2="220" y2="192" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="237" y1="86"  x2="262" y2="190" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" stroke-linecap="round"/>
-  <line x1="279" y1="93"  x2="299" y2="183" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" stroke-linecap="round"/>
-  <ellipse cx="180" cy="110" rx="30" ry="8" fill="rgba(255,250,240,0.08)" transform="rotate(-5 180 110)"/>
-</svg>`;
+const svgs: Record<string, string> = {
 
-const campagneSvg = `
-<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="bg2" cx="50%" cy="50%">
-      <stop offset="0%"   stop-color="#6B3A1A"/>
-      <stop offset="100%" stop-color="#2A1208"/>
-    </radialGradient>
-    <radialGradient id="crust2" cx="40%" cy="35%">
-      <stop offset="0%"   stop-color="#B87840"/>
-      <stop offset="50%"  stop-color="#8B5220"/>
-      <stop offset="100%" stop-color="#5A3010"/>
-    </radialGradient>
-  </defs>
-  <rect width="400" height="260" fill="url(#bg2)"/>
-  <ellipse cx="200" cy="215" rx="120" ry="16" fill="rgba(0,0,0,0.4)"/>
-  <circle cx="200" cy="138" r="95" fill="url(#crust2)"/>
-  <line x1="200" y1="65"  x2="200" y2="210" stroke="#4A2010" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
-  <line x1="126" y1="138" x2="274" y2="138" stroke="#4A2010" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
-  <line x1="146" y1="80"  x2="254" y2="196" stroke="#4A2010" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
-  <line x1="254" y1="80"  x2="146" y2="196" stroke="#4A2010" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
-  <circle cx="200" cy="120" r="55" fill="rgba(255,250,230,0.06)"/>
-  <ellipse cx="185" cy="108" rx="20" ry="10" fill="rgba(255,250,240,0.1)" transform="rotate(-15 185 108)"/>
-  <circle cx="175" cy="110" r="40" fill="rgba(200,150,70,0.12)"/>
-</svg>`;
+  baguette: `<svg viewBox="0 0 400 268" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bg-b" cx="50%" cy="50%"><stop offset="0%" stop-color="#8b5a2b"/><stop offset="100%" stop-color="#3d1f0a"/></radialGradient>
+      <radialGradient id="cr-b" cx="50%" cy="38%"><stop offset="0%" stop-color="#c4813a"/><stop offset="55%" stop-color="#a0622a"/><stop offset="100%" stop-color="#6b3a1a"/></radialGradient>
+    </defs>
+    <rect width="400" height="268" fill="url(#bg-b)"/>
+    <ellipse cx="200" cy="215" rx="168" ry="22" fill="rgba(0,0,0,.32)"/>
+    <ellipse cx="200" cy="142" rx="166" ry="57" fill="url(#cr-b)"/>
+    <ellipse cx="200" cy="120" rx="148" ry="30" fill="rgba(220,160,80,.22)"/>
+    <line x1="112" y1="96"  x2="138" y2="190" stroke="#5a2e0a" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+    <line x1="156" y1="88"  x2="182" y2="196" stroke="#5a2e0a" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+    <line x1="200" y1="85"  x2="226" y2="198" stroke="#5a2e0a" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+    <line x1="244" y1="88"  x2="268" y2="196" stroke="#5a2e0a" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+    <line x1="286" y1="97"  x2="306" y2="188" stroke="#5a2e0a" stroke-width="3" stroke-linecap="round" opacity=".65"/>
+    <line x1="113" y1="94"  x2="139" y2="188" stroke="rgba(255,200,100,.28)" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="157" y1="86"  x2="183" y2="194" stroke="rgba(255,200,100,.28)" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="201" y1="83"  x2="227" y2="196" stroke="rgba(255,200,100,.28)" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="245" y1="86"  x2="269" y2="194" stroke="rgba(255,200,100,.28)" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="287" y1="95"  x2="307" y2="186" stroke="rgba(255,200,100,.28)" stroke-width="1.5" stroke-linecap="round"/>
+    <ellipse cx="178" cy="112" rx="32" ry="9" fill="rgba(255,250,240,.07)" transform="rotate(-6 178 112)"/>
+  </svg>`,
 
-const seigleSvg = `
-<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="bg3" cx="50%" cy="50%">
-      <stop offset="0%"   stop-color="#4A2E18"/>
-      <stop offset="100%" stop-color="#1E0E06"/>
-    </radialGradient>
-    <radialGradient id="crust3" cx="45%" cy="35%">
-      <stop offset="0%"   stop-color="#8A6040"/>
-      <stop offset="60%"  stop-color="#6A4020"/>
-      <stop offset="100%" stop-color="#3A200A"/>
-    </radialGradient>
-  </defs>
-  <rect width="400" height="260" fill="url(#bg3)"/>
-  <ellipse cx="200" cy="218" rx="130" ry="14" fill="rgba(0,0,0,0.45)"/>
-  <ellipse cx="200" cy="138" rx="130" ry="72" fill="url(#crust3)"/>
-  <ellipse cx="200" cy="100" rx="100" ry="20" fill="rgba(0,0,0,0)" stroke="#3A1808" stroke-width="3" opacity="0.5"/>
-  <line x1="80"  y1="120" x2="320" y2="120" stroke="#3A1808" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
-  <line x1="80"  y1="155" x2="320" y2="155" stroke="#3A1808" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
-  <ellipse cx="190" cy="108" rx="80" ry="22" fill="rgba(180,130,70,0.12)"/>
-  <circle cx="160" cy="130" r="2" fill="rgba(80,40,10,0.5)"/>
-  <circle cx="200" cy="125" r="2" fill="rgba(80,40,10,0.5)"/>
-  <circle cx="240" cy="132" r="2" fill="rgba(80,40,10,0.5)"/>
-  <circle cx="180" cy="150" r="2" fill="rgba(80,40,10,0.4)"/>
-  <circle cx="220" cy="148" r="2" fill="rgba(80,40,10,0.4)"/>
-</svg>`;
+  campagne: `<svg viewBox="0 0 400 268" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bg-c" cx="50%" cy="50%"><stop offset="0%" stop-color="#6b3a1a"/><stop offset="100%" stop-color="#2a1208"/></radialGradient>
+      <radialGradient id="cr-c" cx="42%" cy="36%"><stop offset="0%" stop-color="#b87840"/><stop offset="50%" stop-color="#8b5220"/><stop offset="100%" stop-color="#5a3010"/></radialGradient>
+    </defs>
+    <rect width="400" height="268" fill="url(#bg-c)"/>
+    <ellipse cx="200" cy="222" rx="125" ry="17" fill="rgba(0,0,0,.38)"/>
+    <circle  cx="200" cy="138" r="98"  fill="url(#cr-c)"/>
+    <line x1="200" y1="62"  x2="200" y2="214" stroke="#4a2010" stroke-width="3"   stroke-linecap="round" opacity=".55"/>
+    <line x1="124" y1="138" x2="276" y2="138" stroke="#4a2010" stroke-width="3"   stroke-linecap="round" opacity=".55"/>
+    <line x1="145" y1="79"  x2="255" y2="197" stroke="#4a2010" stroke-width="2"   stroke-linecap="round" opacity=".38"/>
+    <line x1="255" y1="79"  x2="145" y2="197" stroke="#4a2010" stroke-width="2"   stroke-linecap="round" opacity=".38"/>
+    <circle cx="200" cy="120" r="58" fill="rgba(255,250,230,.05)"/>
+    <ellipse cx="183" cy="108" rx="22" ry="11" fill="rgba(255,250,240,.09)" transform="rotate(-14 183 108)"/>
+    <circle cx="174" cy="112" r="42" fill="rgba(200,150,70,.10)"/>
+  </svg>`,
 
-const fougasseSvg = `
-<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="bg4" cx="50%" cy="50%">
-      <stop offset="0%"   stop-color="#9A6A30"/>
-      <stop offset="100%" stop-color="#4A2A10"/>
-    </radialGradient>
-    <radialGradient id="crust4" cx="50%" cy="40%">
-      <stop offset="0%"   stop-color="#D4A050"/>
-      <stop offset="50%"  stop-color="#B07830"/>
-      <stop offset="100%" stop-color="#7A4818"/>
-    </radialGradient>
-  </defs>
-  <rect width="400" height="260" fill="url(#bg4)"/>
-  <ellipse cx="200" cy="218" rx="140" ry="14" fill="rgba(0,0,0,0.35)"/>
-  <path d="M200 60 C240 80 290 100 300 130 C310 160 280 200 200 210 C120 200 90 160 100 130 C110 100 160 80 200 60Z" fill="url(#crust4)"/>
-  <line x1="200" y1="75"  x2="200" y2="200" stroke="#5A3010" stroke-width="8"  stroke-linecap="round" opacity="0.7"/>
-  <line x1="200" y1="110" x2="150" y2="155" stroke="#5A3010" stroke-width="6"  stroke-linecap="round" opacity="0.6"/>
-  <line x1="200" y1="110" x2="250" y2="155" stroke="#5A3010" stroke-width="6"  stroke-linecap="round" opacity="0.6"/>
-  <line x1="200" y1="145" x2="155" y2="180" stroke="#5A3010" stroke-width="5"  stroke-linecap="round" opacity="0.5"/>
-  <line x1="200" y1="145" x2="245" y2="180" stroke="#5A3010" stroke-width="5"  stroke-linecap="round" opacity="0.5"/>
-  <path d="M200 60 C240 80 290 100 300 130 C310 160 280 200 200 210 C120 200 90 160 100 130 C110 100 160 80 200 60Z" fill="rgba(255,220,100,0.07)"/>
-  <circle cx="175" cy="100" r="3"   fill="#4A6020" opacity="0.8"/>
-  <circle cx="225" cy="95"  r="2"   fill="#4A6020" opacity="0.7"/>
-  <circle cx="160" cy="130" r="2.5" fill="#4A6020" opacity="0.7"/>
-  <circle cx="240" cy="125" r="3"   fill="#4A6020" opacity="0.8"/>
-  <circle cx="170" cy="165" r="2"   fill="#4A6020" opacity="0.6"/>
-  <circle cx="228" cy="168" r="2.5" fill="#4A6020" opacity="0.7"/>
-</svg>`;
+  seigle: `<svg viewBox="0 0 400 268" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bg-s" cx="50%" cy="50%"><stop offset="0%" stop-color="#4a2e18"/><stop offset="100%" stop-color="#1e0e06"/></radialGradient>
+      <radialGradient id="cr-s" cx="46%" cy="36%"><stop offset="0%" stop-color="#8a6040"/><stop offset="58%" stop-color="#6a4020"/><stop offset="100%" stop-color="#3a200a"/></radialGradient>
+    </defs>
+    <rect width="400" height="268" fill="url(#bg-s)"/>
+    <ellipse cx="200" cy="225" rx="134" ry="15" fill="rgba(0,0,0,.42)"/>
+    <ellipse cx="200" cy="138" rx="134" ry="76" fill="url(#cr-s)"/>
+    <line x1="78"  y1="122" x2="322" y2="122" stroke="#3a1808" stroke-width="2.5" stroke-linecap="round" opacity=".48"/>
+    <line x1="78"  y1="156" x2="322" y2="156" stroke="#3a1808" stroke-width="2.5" stroke-linecap="round" opacity=".48"/>
+    <ellipse cx="192" cy="110" rx="82" ry="23" fill="rgba(180,130,70,.10)"/>
+    <circle cx="162" cy="132" r="2" fill="rgba(80,40,10,.48)"/>
+    <circle cx="200" cy="126" r="2" fill="rgba(80,40,10,.48)"/>
+    <circle cx="238" cy="134" r="2" fill="rgba(80,40,10,.48)"/>
+    <circle cx="180" cy="152" r="2" fill="rgba(80,40,10,.38)"/>
+    <circle cx="218" cy="150" r="2" fill="rgba(80,40,10,.38)"/>
+  </svg>`,
+
+  fougasse: `<svg viewBox="0 0 400 268" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bg-f" cx="50%" cy="50%"><stop offset="0%" stop-color="#9a6a30"/><stop offset="100%" stop-color="#4a2a10"/></radialGradient>
+      <radialGradient id="cr-f" cx="50%" cy="40%"><stop offset="0%" stop-color="#d4a050"/><stop offset="50%" stop-color="#b07830"/><stop offset="100%" stop-color="#7a4818"/></radialGradient>
+    </defs>
+    <rect width="400" height="268" fill="url(#bg-f)"/>
+    <ellipse cx="200" cy="224" rx="144" ry="15" fill="rgba(0,0,0,.33)"/>
+    <path d="M200 58 C242 79 294 100 304 132 C314 162 282 204 200 214 C118 204 86 162 96 132 C106 100 158 79 200 58Z" fill="url(#cr-f)"/>
+    <line x1="200" y1="73"  x2="200" y2="206" stroke="#5a3010" stroke-width="8"  stroke-linecap="round" opacity=".68"/>
+    <line x1="200" y1="108" x2="148" y2="157" stroke="#5a3010" stroke-width="5.5" stroke-linecap="round" opacity=".58"/>
+    <line x1="200" y1="108" x2="252" y2="157" stroke="#5a3010" stroke-width="5.5" stroke-linecap="round" opacity=".58"/>
+    <line x1="200" y1="146" x2="152" y2="183" stroke="#5a3010" stroke-width="4.5" stroke-linecap="round" opacity=".48"/>
+    <line x1="200" y1="146" x2="248" y2="183" stroke="#5a3010" stroke-width="4.5" stroke-linecap="round" opacity=".48"/>
+    <path d="M200 58 C242 79 294 100 304 132 C314 162 282 204 200 214 C118 204 86 162 96 132 C106 100 158 79 200 58Z" fill="rgba(255,220,100,.06)"/>
+    <circle cx="174" cy="99"  r="3"   fill="#4a6020" opacity=".78"/>
+    <circle cx="226" cy="94"  r="2.2" fill="#4a6020" opacity=".70"/>
+    <circle cx="158" cy="132" r="2.6" fill="#4a6020" opacity=".68"/>
+    <circle cx="242" cy="126" r="3"   fill="#4a6020" opacity=".78"/>
+    <circle cx="168" cy="167" r="2"   fill="#4a6020" opacity=".60"/>
+    <circle cx="230" cy="170" r="2.5" fill="#4a6020" opacity=".68"/>
+  </svg>`,
+};
 
 // ── Product data ──────────────────────────────────────────────
-type Product = Omit<ProductProps, 'delay'>;
+type ProductData = Omit<CardProps, 'delay'>;
 
-const products: Product[] = [
+const products: ProductData[] = [
   {
-    name:   'Baguette',
-    nameJp: 'バゲット・トラディション',
-    desc:   'フランス語で「細い棒」。薄く割れるクラストと、気泡の多いクラムが特徴。毎日2回、焼き立てをご提供します。小麦の香りが溢れる、Kura の顔です。',
-    price:  '¥340',
-    badge:  'Signature',
-    svgIllustration: baguetteSvg,
+    name:    'Baguette',
+    nameJp:  'バゲット・トラディション',
+    price:   '¥360',
+    desc:    'フランスの伝統製法を忠実に継承した一本。薄く鋭いクラストが奏でる音、そして気泡の多いクラムに染み込むバター——これ以上シンプルで複雑なパンはありません。',
+    badge:   'Signature',
+    svgBg:   svgs.baguette,
   },
   {
-    name:   'Campagne',
-    nameJp: 'カンパーニュ・ルスティック',
-    desc:   'ライ麦と全粒粉を加えた素朴な田舎パン。厚みのあるクラストと、しっとりした内側のコントラスト。チーズやシャルキュトリーとの相性は抜群です。',
-    price:  '¥1,080 / 1/2カット ¥580',
-    badge:  'Popular',
-    svgIllustration: campagneSvg,
+    name:    'Campagne',
+    nameJp:  'カンパーニュ・ルスティック',
+    price:   '¥1,200',
+    priceNote: '/ 1/2カット ¥680',
+    desc:    'ライ麦と全粒粉を配合した素朴な田舎パン。ずっしりとした重さの中に、酵母の複雑な酸味と甘み。チーズ、シャルキュトリー、赤ワインとの親和性は最高峰です。',
+    badge:   'Popular',
+    svgBg:   svgs.campagne,
   },
   {
-    name:   'Pain de Seigle',
-    nameJp: 'ライ麦パン',
-    desc:   'ライ麦70%の重厚なパン。独特の酸味と深いコク。薄くスライスしてバターを塗るだけで、ビールのつまみになります。',
-    price:  '¥920',
-    svgIllustration: seigleSvg,
+    name:    'Pain de Seigle',
+    nameJp:  'ライ麦パン 70%',
+    price:   '¥980',
+    desc:    'ライ麦粉70%の重厚なドイツ系パン。独特の酸味と深いコクは、薄くスライスしてバターを塗るだけで完結する。毎日食べることで、その真価を知ります。',
+    svgBg:   svgs.seigle,
   },
   {
-    name:   'Fougasse',
-    nameJp: 'フーガス・オリーブ',
-    desc:   '南仏プロヴァンス発祥、葉の形に切り込みを入れたフラットブレッド。オリーブオイルとローズマリーが香り、ワインの友として。',
-    price:  '¥480',
-    badge:  'Seasonal',
-    svgIllustration: fougasseSvg,
+    name:    'Fougasse',
+    nameJp:  'フーガス・オリーブ＆ローズマリー',
+    price:   '¥520',
+    desc:    '南仏プロヴァンス発祥、麦の穂をかたどったフラットブレッド。オリーブオイルとローズマリーが香り、外はカリッと中はしっとり。ワインのお供に。',
+    badge:   'Seasonal',
+    svgBg:   svgs.fougasse,
   },
 ];
 
-const delays = ['', 'fade-in-delay-1', 'fade-in-delay-2', 'fade-in-delay-3'];
+// ── Baking schedule ───────────────────────────────────────────
+const schedule = [
+  { time: '5:30',  title: '仕込み開始 / 生地の成形',  body: '前日から低温発酵させた生地を窯に入れる準備。職人の手で一つひとつ成形されます。' },
+  { time: '6:00',  title: '開店 / 第一陣 バゲット',   body: '窯に火が入り、最初のバゲットが焼き上がります。早起きが報われる、最もクリスピーな時間。' },
+  { time: '9:00',  title: 'カンパーニュ・ライ麦パン', body: '大型のハード系が続々と登場。クラストが冷めていく音に耳を澄ませてください。' },
+  { time: '11:30', title: '第二陣 バゲット / フーガス', body: '昼食に合わせた追加焼成。数量限定のため、お早めにどうぞ。' },
+  { time: '14:00', title: '週替わり特別パン',          body: 'クロワッサン、パン・オ・ノワ、季節のフルーツパンなど。SNSで前日お知らせします。' },
+  { time: '17:00', title: '閉店（売り切れ次第終了）',  body: '本日のパンがなくなり次第終了です。明日もまた、焼き立てをお届けします。' },
+];
+
+const delays = ['', 'reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'];
+const schedDelays = ['', 'reveal-delay-1', 'reveal-delay-2', 'reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'];
 ---
 
-<section id="products">
+<!-- ════ Products ════════════════════════════════════════════ -->
+<section
+  id="products"
+  class="section-pad bg-wheat-DEFAULT"
+  aria-labelledby="products-heading"
+>
   <div class="section-inner">
 
-    <!-- Section header -->
-    <div class="products-header">
-      <div>
-        <span class="section-label fade-in">— Our Breads</span>
-        <h2 class="section-title fade-in">Signature<br/>Collection</h2>
-        <p class="section-title-jp fade-in">定番のパンたち</p>
-        <div class="divider fade-in"></div>
+    <!-- Header row -->
+    <div class="flex flex-wrap justify-between items-end gap-6 mb-14">
+      <div class="reveal">
+        <span class="eyebrow text-amber-brand">— Our Breads</span>
+        <span class="section-rule"></span>
+        <h2
+          id="products-heading"
+          class="font-display italic text-display-md text-crust-DEFAULT mt-1 leading-tight"
+        >
+          Signature<br/>Collection
+        </h2>
+        <p class="font-sans text-[0.8rem] tracking-[0.1em] text-smoke-light uppercase mt-1">
+          定番のパンたち
+        </p>
       </div>
-      <p class="products-note fade-in">
-        仕入れや発酵の状態によって、<br/>品揃えは日々変わります。<br/>お電話でご確認ください。
+      <p class="reveal reveal-delay-2 font-sans text-body-sm text-smoke-light max-w-[240px] text-right leading-relaxed">
+        品揃えは仕入れや発酵状況によって<br/>毎日変わります。<br/>お電話でご確認ください。
       </p>
     </div>
 
     <!-- Product card grid -->
-    <div class="products-grid">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
       {products.map((p, i) => (
         <ProductCard {...p} delay={delays[i]} />
       ))}
@@ -191,31 +183,71 @@ const delays = ['', 'fade-in-delay-1', 'fade-in-delay-2', 'fade-in-delay-3'];
   </div>
 </section>
 
-<style>
-  #products { background: var(--color-wheat); }
+<!-- ════ Schedule ════════════════════════════════════════════ -->
+<section
+  id="schedule"
+  class="section-pad bg-kiln-DEFAULT relative overflow-hidden"
+  aria-labelledby="schedule-heading"
+>
+  <!-- Subtle warm glow -->
+  <div
+    class="absolute bottom-0 left-0 w-[420px] h-[420px] pointer-events-none"
+    style="background: radial-gradient(circle at 0% 100%, rgba(107,58,26,0.28) 0%, transparent 70%);"
+    aria-hidden="true"
+  ></div>
 
-  .products-header {
-    display:         flex;
-    justify-content: space-between;
-    align-items:     flex-end;
-    margin-bottom:   64px;
-    flex-wrap:       wrap;
-    gap:             24px;
-  }
-  .products-note {
-    font-size:   0.82rem;
-    color:       var(--color-ash);
-    max-width:   240px;
-    line-height: 1.9;
-    text-align:  right;
-  }
-  .products-grid {
-    display:               grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap:                   24px;
-  }
+  <div class="section-inner relative z-10">
 
-  @media (max-width: 768px) {
-    .products-note { text-align: left; }
-  }
-</style>
+    <!-- Section heading -->
+    <div class="max-w-content mb-14 reveal">
+      <span class="eyebrow text-amber-brand">— Baking Schedule</span>
+      <span class="section-rule"></span>
+      <h2
+        id="schedule-heading"
+        class="font-display italic text-display-md text-wheat-DEFAULT mt-1 leading-tight"
+      >
+        When Bread<br/>
+        <em class="not-italic text-amber-brand">Comes Alive</em>
+      </h2>
+      <p class="font-sans text-body-sm text-wheat-DEFAULT/40 mt-2 max-w-narrow">
+        パンは生き物です。仕込みから焼成まで、一日の流れをご覧ください。
+        焼き上がりの時間を目安にご来店いただくと、最高の状態でお渡しできます。
+      </p>
+    </div>
+
+    <!-- Timeline -->
+    <div class="max-w-[680px] relative">
+      <!-- Vertical guide line -->
+      <div
+        class="absolute left-[72px] top-4 bottom-4 w-px"
+        style="background: linear-gradient(to bottom, transparent, var(--c-amber) 10%, var(--c-amber) 90%, transparent);"
+        aria-hidden="true"
+      ></div>
+
+      {schedule.map((row, i) => (
+        <div class={`flex items-start gap-8 py-6 reveal ${schedDelays[i]}`}>
+          <!-- Time -->
+          <span class="font-display italic text-[1.5rem] text-amber-brand min-w-[72px] text-right pt-0.5 leading-none">
+            {row.time}
+          </span>
+          <!-- Dot -->
+          <div
+            class="flex-shrink-0 w-2.5 h-2.5 rounded-full bg-amber-brand border-2 border-kiln-DEFAULT mt-2 relative -left-1"
+            style="box-shadow: 0 0 0 3px rgba(193,127,59,.18);"
+            aria-hidden="true"
+          ></div>
+          <!-- Copy -->
+          <div>
+            <h3 class="font-serif text-[0.98rem] font-medium text-wheat-DEFAULT leading-snug">
+              {row.title}
+            </h3>
+            <p class="font-sans text-body-sm text-wheat-DEFAULT/42 mt-1.5 leading-[1.78]">
+              {row.body}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+  </div>
+</section>
