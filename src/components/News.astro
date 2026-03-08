@@ -1,0 +1,28 @@
+---
+import { client } from "../library/microcms";
+import type { News } from "../library/microcms";
+
+const response = await client.get({ endpoint: "news" });
+const newsList = response.contents;
+---
+
+<section class="news-section">
+  <h2>お知らせ</h2>
+  <ul>
+    {newsList.map((news: News) => (
+      <li>
+        <span class="date">{new Date(news.publishedAt).toLocaleDateString()}</span>
+        <p>{news.title}</p>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .news-section {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  /* ここにお店の雰囲気に合わせたCSSを書く */
+</style>

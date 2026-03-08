@@ -11,8 +11,15 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero       from '../components/Hero.astro';
 import Concept    from '../components/Concept.astro';
+import News from "../components/News.astro"; // 1. インポートする
 import Products   from '../components/Products.astro';
 import Access     from '../components/Access.astro';
+// 1. さっき作った窓口を読み込む
+import { client } from "../library/microcms";
+import type { News } from "../library/microcms";
+// 2. microCMSから「news」というエンドポイントのデータを取ってくる
+const response = await client.get({ endpoint: "news" });
+const newsList = response.contents;
 ---
 
 <BaseLayout
@@ -20,6 +27,7 @@ import Access     from '../components/Access.astro';
   description="自家製酵母と24時間低温発酵、薪窯焼成。石川県金沢市ひがし茶屋街のハード系パン専門店 Boulangerie Kura（ブーランジェリー・クラ）。"
 >
   <Hero />
+  <News />
   <Concept />
   <Products />
   <Access />
