@@ -1,0 +1,206 @@
+---
+// src/components/Hero.astro
+// ─────────────────────────────────────────────────────────────
+// Full-viewport hero section with CSS gradient "bread texture",
+// grain overlay, decorative SVG baguette silhouette and a
+// subtle scroll-indicator animation.
+// ─────────────────────────────────────────────────────────────
+---
+
+<section id="hero">
+  <!-- Layered CSS gradient background (simulates bread warmth) -->
+  <div class="hero-bg"></div>
+
+  <!-- Decorative baguette silhouette (right side, desktop only) -->
+  <svg
+    class="hero-illustration"
+    viewBox="0 0 600 500"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <ellipse cx="300" cy="250" rx="260" ry="110" fill="rgba(255,255,255,0.6)" />
+    <ellipse cx="300" cy="250" rx="255" ry="105" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" />
+    <line x1="180" y1="160" x2="220" y2="340" stroke="rgba(255,255,255,0.5)" stroke-width="3" stroke-linecap="round"/>
+    <line x1="240" y1="148" x2="280" y2="352" stroke="rgba(255,255,255,0.5)" stroke-width="3" stroke-linecap="round"/>
+    <line x1="300" y1="145" x2="340" y2="355" stroke="rgba(255,255,255,0.5)" stroke-width="3" stroke-linecap="round"/>
+    <line x1="360" y1="155" x2="400" y2="345" stroke="rgba(255,255,255,0.5)" stroke-width="3" stroke-linecap="round"/>
+    <line x1="278" y1="95"  x2="298" y2="185" stroke="rgba(255,255,255,0.5)" stroke-width="3" stroke-linecap="round"/>
+    <ellipse cx="300" cy="200" rx="220" ry="40" fill="rgba(255,255,255,0.08)" />
+  </svg>
+
+  <!-- Copy & CTA -->
+  <div class="hero-content">
+    <p class="hero-eyebrow fade-in">Artisan Bread — Since 2012 — Sendai</p>
+
+    <h1 class="hero-title fade-in fade-in-delay-1">
+      From<br/>
+      the <em>Heart</em><br/>
+      of Fire.
+    </h1>
+
+    <p class="hero-subtitle fade-in fade-in-delay-2">
+      窯の奥深く、炎と向き合い続けて生まれるパン。<br/>
+      自家製酵母が奏でる、複雑な香りと歯ごたえ。<br/>
+      それが、Kura の仕事です。
+    </p>
+
+    <a href="#products" class="hero-cta fade-in fade-in-delay-3">
+      <span>今日のパンを見る</span>
+      <!-- Arrow right icon -->
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+           stroke="currentColor" stroke-width="1.5"
+           stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="8" x2="13" y2="8"/>
+        <polyline points="8 3 13 8 8 13"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Animated scroll indicator -->
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<style>
+  #hero {
+    position:    relative;
+    min-height:  100vh;
+    display:     flex;
+    align-items: flex-end;
+    padding:     0;
+    overflow:    hidden;
+  }
+
+  /* ── Background ─────────────────────────────────────────── */
+  .hero-bg {
+    position: absolute;
+    inset:    0;
+    background:
+      linear-gradient(
+        160deg,
+        rgba(28,18,10,0.10) 0%,
+        rgba(28,18,10,0.55) 60%,
+        rgba(28,18,10,0.88) 100%
+      ),
+      radial-gradient(ellipse at 30% 40%, #A0622A 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 60%, #7A4020 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 30%, #C88040 0%, transparent 40%),
+      radial-gradient(ellipse at 20% 70%, #6B3020 0%, transparent 35%),
+      radial-gradient(ellipse at 80% 20%, #B07030 0%, transparent 38%),
+      #3A2010;
+  }
+  /* Noise grain overlay */
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset:    0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    opacity:         0.35;
+    pointer-events:  none;
+  }
+
+  /* ── SVG illustration ───────────────────────────────────── */
+  .hero-illustration {
+    position:       absolute;
+    right:          -5%;
+    top:            50%;
+    transform:      translateY(-50%);
+    width:          min(55vw, 700px);
+    opacity:        0.18;
+    pointer-events: none;
+  }
+
+  /* ── Copy block ─────────────────────────────────────────── */
+  .hero-content {
+    position:   relative;
+    z-index:    2;
+    width:      100%;
+    padding:    0 40px 100px;
+    max-width:  1100px;
+    margin:     0 auto;
+  }
+  .hero-eyebrow {
+    font-family:    var(--font-serif-en);
+    font-size:      0.72rem;
+    font-style:     italic;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color:          var(--color-amber);
+    margin-bottom:  20px;
+  }
+  .hero-title {
+    font-family:    var(--font-serif-en);
+    font-size:      clamp(3rem, 8vw, 7rem);
+    font-weight:    900;
+    line-height:    1.0;
+    color:          var(--color-wheat);
+    letter-spacing: -0.02em;
+  }
+  .hero-title em {
+    font-style: italic;
+    color:      var(--color-amber);
+  }
+  .hero-subtitle {
+    font-family:  var(--font-serif-jp);
+    font-size:    clamp(1rem, 2.5vw, 1.35rem);
+    font-weight:  300;
+    color:        rgba(245, 237, 216, 0.75);
+    margin-top:   20px;
+    max-width:    480px;
+    line-height:  1.9;
+  }
+  .hero-cta {
+    display:        inline-flex;
+    align-items:    center;
+    gap:            12px;
+    margin-top:     44px;
+    padding:        16px 36px;
+    border:         1px solid var(--color-amber);
+    color:          var(--color-wheat);
+    font-family:    var(--font-sans);
+    font-size:      0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition:     background 0.3s, color 0.3s;
+  }
+  .hero-cta:hover {
+    background: var(--color-amber);
+    color:      var(--color-crust);
+  }
+
+  /* ── Scroll indicator ───────────────────────────────────── */
+  .hero-scroll {
+    position:       absolute;
+    bottom:         36px;
+    left:           50%;
+    transform:      translateX(-50%);
+    display:        flex;
+    flex-direction: column;
+    align-items:    center;
+    gap:            8px;
+    color:          rgba(245, 237, 216, 0.5);
+    font-size:      0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-family:    var(--font-sans);
+  }
+  .scroll-line {
+    width:      1px;
+    height:     40px;
+    background: linear-gradient(to bottom, var(--color-amber), transparent);
+    animation:  scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1);   }
+    50%      { opacity: 1;   transform: scaleY(1.2); }
+  }
+
+  /* ── Responsive ─────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .hero-content     { padding: 0 24px 80px; }
+    .hero-illustration{ display: none; }
+  }
+</style>

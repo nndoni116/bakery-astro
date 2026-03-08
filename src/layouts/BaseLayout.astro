@@ -1,0 +1,125 @@
+---
+// src/layouts/BaseLayout.astro
+// ─────────────────────────────────────────────────────────────
+// Wraps every page with <head>, navigation, footer and all
+// client-side interaction scripts (scroll effects, hamburger).
+// ─────────────────────────────────────────────────────────────
+export interface Props {
+  title?:       string;
+  description?: string;
+}
+
+const {
+  title       = 'Boulangerie Kura | ハード系パン専門店',
+  description = '自家製酵母と24時間発酵。窯から生まれる、本物のパン。',
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap"
+    rel="stylesheet"
+  />
+</head>
+
+<body>
+
+  <!-- ===== Navigation ===== -->
+  <nav id="nav">
+    <a href="#hero" class="nav-logo">Boulangerie Kura</a>
+
+    <ul class="nav-links">
+      <li><a href="#concept">Concept</a></li>
+      <li><a href="#products">Breads</a></li>
+      <li><a href="#schedule">Schedule</a></li>
+      <li><a href="#access">Access</a></li>
+    </ul>
+
+    <button class="hamburger" id="hamburger" aria-label="メニューを開く">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Overlay Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#concept"  id="mc-concept">Concept</a>
+    <a href="#products" id="mc-products">Breads</a>
+    <a href="#schedule" id="mc-schedule">Schedule</a>
+    <a href="#access"   id="mc-access">Access</a>
+  </div>
+
+  <!-- ===== Page Content (injected by each page) ===== -->
+  <slot />
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <p class="footer-logo">Boulangerie Kura</p>
+    <p class="footer-tagline">窯から生まれる、本物のパン。</p>
+    <p class="footer-copy">© 2026 Boulangerie Kura. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
+
+<!-- ===== Client-side Scripts ===== -->
+<script>
+  // ── Navigation: scroll-triggered background ─────────────────
+  const nav = document.getElementById('nav') as HTMLElement;
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+
+  // ── Hamburger menu ──────────────────────────────────────────
+  const hamburger  = document.getElementById('hamburger')  as HTMLButtonElement;
+  const mobileMenu = document.getElementById('mobileMenu') as HTMLDivElement;
+
+  function openMenu()  {
+    hamburger.classList.add('open');
+    mobileMenu.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMenu() {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.contains('open') ? closeMenu() : openMenu();
+  });
+
+  // Close mobile menu when any link is clicked
+  ['mc-concept', 'mc-products', 'mc-schedule', 'mc-access'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', closeMenu);
+  });
+
+  // ── Scroll Fade-In (IntersectionObserver) ───────────────────
+  const fadeObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          // Unobserve after reveal to save resources
+          fadeObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12 }
+  );
+
+  document.querySelectorAll<HTMLElement>('.fade-in').forEach(el => {
+    fadeObserver.observe(el);
+  });
+</script>

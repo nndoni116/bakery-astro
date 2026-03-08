@@ -1,0 +1,221 @@
+---
+// src/components/Products.astro
+// ─────────────────────────────────────────────────────────────
+// Owns the canonical product data and renders a responsive
+// grid of <ProductCard> components.
+// To add a new bread: append an entry to the `products` array.
+// ─────────────────────────────────────────────────────────────
+import ProductCard from './ProductCard.astro';
+import type { Props as ProductProps } from './ProductCard.astro';
+
+// SVG illustrations are defined as template literals here so
+// that the data stays co-located with the component that owns it.
+// Each string is a complete <svg> element that will be injected
+// into the card via set:html.
+
+const baguetteSvg = `
+<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg1" cx="50%" cy="50%">
+      <stop offset="0%"   stop-color="#8B5A2B"/>
+      <stop offset="100%" stop-color="#3D1F0A"/>
+    </radialGradient>
+    <radialGradient id="crust1" cx="50%" cy="40%">
+      <stop offset="0%"   stop-color="#C4813A"/>
+      <stop offset="60%"  stop-color="#A0622A"/>
+      <stop offset="100%" stop-color="#6B3A1A"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="260" fill="url(#bg1)"/>
+  <ellipse cx="200" cy="210" rx="160" ry="20" fill="rgba(0,0,0,0.35)"/>
+  <ellipse cx="200" cy="140" rx="160" ry="55" fill="url(#crust1)"/>
+  <ellipse cx="200" cy="118" rx="140" ry="28" fill="rgba(220,160,80,0.25)"/>
+  <line x1="110" y1="95"  x2="135" y2="185" stroke="#5A2E0A" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  <line x1="152" y1="88"  x2="177" y2="192" stroke="#5A2E0A" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  <line x1="194" y1="86"  x2="219" y2="194" stroke="#5A2E0A" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  <line x1="236" y1="88"  x2="261" y2="192" stroke="#5A2E0A" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  <line x1="278" y1="95"  x2="298" y2="185" stroke="#5A2E0A" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  <line x1="111" y1="93"  x2="136" y2="183" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="153" y1="86"  x2="178" y2="190" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="195" y1="84"  x2="220" y2="192" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="237" y1="86"  x2="262" y2="190" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="279" y1="93"  x2="299" y2="183" stroke="rgba(255,200,100,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+  <ellipse cx="180" cy="110" rx="30" ry="8" fill="rgba(255,250,240,0.08)" transform="rotate(-5 180 110)"/>
+</svg>`;
+
+const campagneSvg = `
+<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg2" cx="50%" cy="50%">
+      <stop offset="0%"   stop-color="#6B3A1A"/>
+      <stop offset="100%" stop-color="#2A1208"/>
+    </radialGradient>
+    <radialGradient id="crust2" cx="40%" cy="35%">
+      <stop offset="0%"   stop-color="#B87840"/>
+      <stop offset="50%"  stop-color="#8B5220"/>
+      <stop offset="100%" stop-color="#5A3010"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="260" fill="url(#bg2)"/>
+  <ellipse cx="200" cy="215" rx="120" ry="16" fill="rgba(0,0,0,0.4)"/>
+  <circle cx="200" cy="138" r="95" fill="url(#crust2)"/>
+  <line x1="200" y1="65"  x2="200" y2="210" stroke="#4A2010" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  <line x1="126" y1="138" x2="274" y2="138" stroke="#4A2010" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  <line x1="146" y1="80"  x2="254" y2="196" stroke="#4A2010" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+  <line x1="254" y1="80"  x2="146" y2="196" stroke="#4A2010" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+  <circle cx="200" cy="120" r="55" fill="rgba(255,250,230,0.06)"/>
+  <ellipse cx="185" cy="108" rx="20" ry="10" fill="rgba(255,250,240,0.1)" transform="rotate(-15 185 108)"/>
+  <circle cx="175" cy="110" r="40" fill="rgba(200,150,70,0.12)"/>
+</svg>`;
+
+const seigleSvg = `
+<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg3" cx="50%" cy="50%">
+      <stop offset="0%"   stop-color="#4A2E18"/>
+      <stop offset="100%" stop-color="#1E0E06"/>
+    </radialGradient>
+    <radialGradient id="crust3" cx="45%" cy="35%">
+      <stop offset="0%"   stop-color="#8A6040"/>
+      <stop offset="60%"  stop-color="#6A4020"/>
+      <stop offset="100%" stop-color="#3A200A"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="260" fill="url(#bg3)"/>
+  <ellipse cx="200" cy="218" rx="130" ry="14" fill="rgba(0,0,0,0.45)"/>
+  <ellipse cx="200" cy="138" rx="130" ry="72" fill="url(#crust3)"/>
+  <ellipse cx="200" cy="100" rx="100" ry="20" fill="rgba(0,0,0,0)" stroke="#3A1808" stroke-width="3" opacity="0.5"/>
+  <line x1="80"  y1="120" x2="320" y2="120" stroke="#3A1808" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+  <line x1="80"  y1="155" x2="320" y2="155" stroke="#3A1808" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+  <ellipse cx="190" cy="108" rx="80" ry="22" fill="rgba(180,130,70,0.12)"/>
+  <circle cx="160" cy="130" r="2" fill="rgba(80,40,10,0.5)"/>
+  <circle cx="200" cy="125" r="2" fill="rgba(80,40,10,0.5)"/>
+  <circle cx="240" cy="132" r="2" fill="rgba(80,40,10,0.5)"/>
+  <circle cx="180" cy="150" r="2" fill="rgba(80,40,10,0.4)"/>
+  <circle cx="220" cy="148" r="2" fill="rgba(80,40,10,0.4)"/>
+</svg>`;
+
+const fougasseSvg = `
+<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg4" cx="50%" cy="50%">
+      <stop offset="0%"   stop-color="#9A6A30"/>
+      <stop offset="100%" stop-color="#4A2A10"/>
+    </radialGradient>
+    <radialGradient id="crust4" cx="50%" cy="40%">
+      <stop offset="0%"   stop-color="#D4A050"/>
+      <stop offset="50%"  stop-color="#B07830"/>
+      <stop offset="100%" stop-color="#7A4818"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="260" fill="url(#bg4)"/>
+  <ellipse cx="200" cy="218" rx="140" ry="14" fill="rgba(0,0,0,0.35)"/>
+  <path d="M200 60 C240 80 290 100 300 130 C310 160 280 200 200 210 C120 200 90 160 100 130 C110 100 160 80 200 60Z" fill="url(#crust4)"/>
+  <line x1="200" y1="75"  x2="200" y2="200" stroke="#5A3010" stroke-width="8"  stroke-linecap="round" opacity="0.7"/>
+  <line x1="200" y1="110" x2="150" y2="155" stroke="#5A3010" stroke-width="6"  stroke-linecap="round" opacity="0.6"/>
+  <line x1="200" y1="110" x2="250" y2="155" stroke="#5A3010" stroke-width="6"  stroke-linecap="round" opacity="0.6"/>
+  <line x1="200" y1="145" x2="155" y2="180" stroke="#5A3010" stroke-width="5"  stroke-linecap="round" opacity="0.5"/>
+  <line x1="200" y1="145" x2="245" y2="180" stroke="#5A3010" stroke-width="5"  stroke-linecap="round" opacity="0.5"/>
+  <path d="M200 60 C240 80 290 100 300 130 C310 160 280 200 200 210 C120 200 90 160 100 130 C110 100 160 80 200 60Z" fill="rgba(255,220,100,0.07)"/>
+  <circle cx="175" cy="100" r="3"   fill="#4A6020" opacity="0.8"/>
+  <circle cx="225" cy="95"  r="2"   fill="#4A6020" opacity="0.7"/>
+  <circle cx="160" cy="130" r="2.5" fill="#4A6020" opacity="0.7"/>
+  <circle cx="240" cy="125" r="3"   fill="#4A6020" opacity="0.8"/>
+  <circle cx="170" cy="165" r="2"   fill="#4A6020" opacity="0.6"/>
+  <circle cx="228" cy="168" r="2.5" fill="#4A6020" opacity="0.7"/>
+</svg>`;
+
+// ── Product data ──────────────────────────────────────────────
+type Product = Omit<ProductProps, 'delay'>;
+
+const products: Product[] = [
+  {
+    name:   'Baguette',
+    nameJp: 'バゲット・トラディション',
+    desc:   'フランス語で「細い棒」。薄く割れるクラストと、気泡の多いクラムが特徴。毎日2回、焼き立てをご提供します。小麦の香りが溢れる、Kura の顔です。',
+    price:  '¥340',
+    badge:  'Signature',
+    svgIllustration: baguetteSvg,
+  },
+  {
+    name:   'Campagne',
+    nameJp: 'カンパーニュ・ルスティック',
+    desc:   'ライ麦と全粒粉を加えた素朴な田舎パン。厚みのあるクラストと、しっとりした内側のコントラスト。チーズやシャルキュトリーとの相性は抜群です。',
+    price:  '¥1,080 / 1/2カット ¥580',
+    badge:  'Popular',
+    svgIllustration: campagneSvg,
+  },
+  {
+    name:   'Pain de Seigle',
+    nameJp: 'ライ麦パン',
+    desc:   'ライ麦70%の重厚なパン。独特の酸味と深いコク。薄くスライスしてバターを塗るだけで、ビールのつまみになります。',
+    price:  '¥920',
+    svgIllustration: seigleSvg,
+  },
+  {
+    name:   'Fougasse',
+    nameJp: 'フーガス・オリーブ',
+    desc:   '南仏プロヴァンス発祥、葉の形に切り込みを入れたフラットブレッド。オリーブオイルとローズマリーが香り、ワインの友として。',
+    price:  '¥480',
+    badge:  'Seasonal',
+    svgIllustration: fougasseSvg,
+  },
+];
+
+const delays = ['', 'fade-in-delay-1', 'fade-in-delay-2', 'fade-in-delay-3'];
+---
+
+<section id="products">
+  <div class="section-inner">
+
+    <!-- Section header -->
+    <div class="products-header">
+      <div>
+        <span class="section-label fade-in">— Our Breads</span>
+        <h2 class="section-title fade-in">Signature<br/>Collection</h2>
+        <p class="section-title-jp fade-in">定番のパンたち</p>
+        <div class="divider fade-in"></div>
+      </div>
+      <p class="products-note fade-in">
+        仕入れや発酵の状態によって、<br/>品揃えは日々変わります。<br/>お電話でご確認ください。
+      </p>
+    </div>
+
+    <!-- Product card grid -->
+    <div class="products-grid">
+      {products.map((p, i) => (
+        <ProductCard {...p} delay={delays[i]} />
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<style>
+  #products { background: var(--color-wheat); }
+
+  .products-header {
+    display:         flex;
+    justify-content: space-between;
+    align-items:     flex-end;
+    margin-bottom:   64px;
+    flex-wrap:       wrap;
+    gap:             24px;
+  }
+  .products-note {
+    font-size:   0.82rem;
+    color:       var(--color-ash);
+    max-width:   240px;
+    line-height: 1.9;
+    text-align:  right;
+  }
+  .products-grid {
+    display:               grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap:                   24px;
+  }
+
+  @media (max-width: 768px) {
+    .products-note { text-align: left; }
+  }
+</style>

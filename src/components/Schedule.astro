@@ -1,0 +1,163 @@
+---
+// src/components/Schedule.astro
+// ─────────────────────────────────────────────────────────────
+// Vertical timeline showing daily baking schedule.
+// ─────────────────────────────────────────────────────────────
+
+interface TimelineRow {
+  time:  string;
+  title: string;
+  body:  string;
+}
+
+const rows: TimelineRow[] = [
+  {
+    time:  '6:00',
+    title: '開店・第一陣 バゲット',
+    body:  '朝一番の焼き立てバゲット。前日深夜に仕込んだ生地が、窯の中で最初の命を吹き込まれる瞬間です。',
+  },
+  {
+    time:  '9:00',
+    title: 'カンパーニュ・ライ麦パン',
+    body:  '大型のハード系パンが続々と登場。クラストが冷めるにつれ、独特のパリパリ音が聞こえます。',
+  },
+  {
+    time:  '11:00',
+    title: '第二陣 バゲット・フーガス',
+    body:  '昼食用に追加焼成。この時間に来られる方へ、最もクリスピーな状態をお届けできます。',
+  },
+  {
+    time:  '14:00',
+    title: '週替わり特別パン',
+    body:  'クロワッサン、パン・オ・ノワ、季節のフルーツパンなど。SNSで当日の内容をお知らせします。',
+  },
+  {
+    time:  '17:00',
+    title: '閉店（売り切れ次第終了）',
+    body:  'パンがなくなり次第その日の営業は終了です。申し訳ございません。明日またお待ちしております。',
+  },
+];
+
+const delays = ['', 'fade-in-delay-1', 'fade-in-delay-2', 'fade-in-delay-3', 'fade-in-delay-4'];
+---
+
+<section id="schedule">
+  <div class="section-inner">
+    <span class="section-label fade-in">— Baking Schedule</span>
+    <h2 class="section-title fade-in">When Bread<br/>Comes Alive</h2>
+    <p class="section-title-jp fade-in">焼き上がりの時間</p>
+    <div class="divider fade-in"></div>
+
+    <p class="schedule-intro fade-in">
+      パンは生き物です。前日から仕込み始め、<br/>
+      窯から出た瞬間が最も美しい。<br/>
+      焼き上がりの時間を目安にお越しください。
+    </p>
+
+    <div class="schedule-timeline">
+      {rows.map((row, i) => (
+        <div class={`schedule-row fade-in ${delays[i]}`}>
+          <span class="schedule-time">{row.time}</span>
+          <div class="schedule-dot"></div>
+          <div class="schedule-info">
+            <h4>{row.title}</h4>
+            <p>{row.body}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  #schedule {
+    background: var(--color-charcoal);
+    position:   relative;
+  }
+
+  /* Override shared colours for dark background */
+  #schedule .section-title    { color: var(--color-wheat); }
+  #schedule .section-title-jp { color: rgba(245,237,216,0.5); }
+  #schedule .divider          { background: var(--color-amber); }
+
+  .schedule-intro {
+    font-family:   var(--font-serif-jp);
+    font-size:     0.95rem;
+    color:         rgba(245,237,216,0.6);
+    margin-bottom: 56px;
+    max-width:     520px;
+    line-height:   2;
+  }
+
+  /* ── Timeline ───────────────────────────────────────────── */
+  .schedule-timeline {
+    position:  relative;
+    max-width: 640px;
+  }
+  /* Vertical guide line */
+  .schedule-timeline::before {
+    content:    '';
+    position:   absolute;
+    left:       72px;
+    top:        0;
+    bottom:     0;
+    width:      1px;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--color-amber) 10%,
+      var(--color-amber) 90%,
+      transparent
+    );
+  }
+
+  .schedule-row {
+    display:     flex;
+    align-items: flex-start;
+    gap:         32px;
+    padding:     24px 0;
+    position:    relative;
+  }
+
+  .schedule-time {
+    font-family: var(--font-serif-en);
+    font-size:   1.4rem;
+    font-weight: 900;
+    color:       var(--color-amber);
+    min-width:   72px;
+    text-align:  right;
+    padding-top: 2px;
+  }
+
+  .schedule-dot {
+    width:         10px;
+    height:        10px;
+    border-radius: 50%;
+    background:    var(--color-amber);
+    border:        2px solid var(--color-charcoal);
+    margin-top:    8px;
+    flex-shrink:   0;
+    position:      relative;
+    left:          -5px;
+    box-shadow:    0 0 0 3px rgba(193,127,59,0.2);
+  }
+
+  .schedule-info h4 {
+    font-family: var(--font-serif-jp);
+    font-size:   1rem;
+    font-weight: 500;
+    color:       var(--color-wheat);
+  }
+  .schedule-info p {
+    font-size:   0.8rem;
+    color:       rgba(245,237,216,0.45);
+    margin-top:  4px;
+    line-height: 1.7;
+  }
+
+  /* ── Responsive ─────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .schedule-timeline::before { left: 56px; }
+    .schedule-time { min-width: 56px; font-size: 1.1rem; }
+  }
+</style>

@@ -1,0 +1,169 @@
+---
+// src/components/Concept.astro
+// ─────────────────────────────────────────────────────────────
+// "Slow. Natural. Honest." philosophy section.
+// Four pillar cards rendered from a local data array.
+// ─────────────────────────────────────────────────────────────
+
+interface Pillar {
+  number: string;
+  title:  string;
+  body:   string;
+  /** Inline SVG path data for the icon (viewBox 0 0 40 40) */
+  iconPaths: string;
+}
+
+const pillars: Pillar[] = [
+  {
+    number: '01',
+    title:  '自家製酵母',
+    body:   '仙台の空気から育てた天然酵母。市販のイーストは一切使いません。酵母の個性が、パンの深みを生み出します。',
+    iconPaths: `
+      <circle cx="20" cy="20" r="14"/>
+      <path d="M20 8 C20 8 14 14 14 20 C14 26 20 32 20 32"/>
+      <path d="M20 8 C20 8 26 14 26 20 C26 26 20 32 20 32"/>
+      <line x1="8" y1="20" x2="32" y2="20"/>
+    `,
+  },
+  {
+    number: '02',
+    title:  '24時間低温発酵',
+    body:   '冷蔵庫でゆっくりと一夜を過ごした生地は、芳醇な香りと複雑な味わいを持ちます。焦りは禁物。',
+    iconPaths: `
+      <circle cx="20" cy="20" r="3"/>
+      <path d="M20 4 L20 9"/><path d="M20 31 L20 36"/>
+      <path d="M4 20 L9 20"/><path d="M31 20 L36 20"/>
+      <path d="M7.5 7.5 L11 11"/><path d="M29 29 L32.5 32.5"/>
+      <path d="M32.5 7.5 L29 11"/><path d="M11 29 L7.5 32.5"/>
+    `,
+  },
+  {
+    number: '03',
+    title:  '薪窯・石床焼成',
+    body:   '250度以上に熱した石床が、生地に一気に熱を与えます。クラストの気泡、独特の焦げ目——これが窯の仕事です。',
+    iconPaths: `
+      <path d="M6 32 C6 32 8 28 14 26 C18 24.5 22 25 26 22 C30 19 32 14 34 10"/>
+      <path d="M10 36 L30 36"/>
+      <path d="M14 30 L14 36"/><path d="M26 30 L26 36"/><path d="M20 28 L20 36"/>
+    `,
+  },
+  {
+    number: '04',
+    title:  '国産小麦へのこだわり',
+    body:   '北海道産「ゆめちから」「はるゆたか」を中心に、粉の個性を活かした配合を季節ごとに調整しています。',
+    iconPaths: `
+      <path d="M10 28 C10 28 13 18 20 16 C27 14 30 20 30 20"/>
+      <ellipse cx="20" cy="26" rx="12" ry="8"/>
+      <path d="M12 22 Q16 18 20 22 Q24 26 28 22"/>
+    `,
+  },
+];
+---
+
+<section id="concept">
+  <div class="section-inner">
+    <span class="section-label fade-in">— Our Philosophy</span>
+    <h2 class="section-title fade-in">Slow. Natural.<br/>Honest.</h2>
+    <p class="section-title-jp fade-in">ゆっくりと、素直に、誠実に。</p>
+    <div class="divider fade-in"></div>
+
+    <p class="concept-lead fade-in">
+      Boulangerie Kura のパンは、急がない。<br/>
+      小麦粉、水、塩、そして時間——それだけが材料です。<br/>
+      24時間以上かけて低温発酵させた生地は、<br/>
+      窯の中で驚くほど豊かな表情を見せてくれます。
+    </p>
+
+    <div class="concept-grid">
+      {pillars.map((p, i) => (
+        <div class={`concept-card fade-in${i > 0 ? ` fade-in-delay-${i}` : ''}`}>
+          <div class="concept-number">{p.number}</div>
+          <svg
+            class="concept-icon"
+            viewBox="0 0 40 40"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            aria-hidden="true"
+            set:html={p.iconPaths}
+          />
+          <h3>{p.title}</h3>
+          <p>{p.body}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  #concept {
+    background: var(--color-crust);
+    position:   relative;
+    overflow:   hidden;
+  }
+  #concept::before {
+    content:       '';
+    position:      absolute;
+    top: -80px; right: -80px;
+    width:         400px;
+    height:        400px;
+    border-radius: 50%;
+    background:    radial-gradient(circle, rgba(107,58,42,0.4) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Override shared section-title colour for dark background */
+  #concept .section-title    { color: var(--color-wheat); }
+  #concept .section-title-jp { color: rgba(245,237,216,0.6); }
+
+  .concept-lead {
+    font-family:  var(--font-serif-jp);
+    font-size:    clamp(1rem, 2vw, 1.15rem);
+    color:        rgba(245, 237, 216, 0.85);
+    max-width:    640px;
+    line-height:  2.1;
+    margin-bottom: 72px;
+  }
+
+  /* ── Card grid ─────────────────────────────────────────── */
+  .concept-grid {
+    display:               grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap:                   2px;
+  }
+  .concept-card {
+    background:  rgba(255,255,255,0.04);
+    border:      1px solid rgba(255,255,255,0.06);
+    padding:     40px 32px;
+    transition:  background 0.3s;
+  }
+  .concept-card:hover { background: rgba(193, 127, 59, 0.08); }
+
+  .concept-number {
+    font-family:  var(--font-serif-en);
+    font-size:    3.5rem;
+    font-weight:  900;
+    color:        rgba(193,127,59,0.15);
+    line-height:  1;
+    margin-bottom: 16px;
+  }
+  .concept-icon {
+    width:         40px;
+    height:        40px;
+    margin-bottom: 20px;
+    color:         var(--color-amber);
+  }
+  .concept-card h3 {
+    font-family:   var(--font-serif-jp);
+    font-size:     1.05rem;
+    font-weight:   500;
+    color:         var(--color-wheat);
+    margin-bottom: 12px;
+  }
+  .concept-card p {
+    font-size:  0.82rem;
+    color:      rgba(245,237,216,0.55);
+    line-height: 1.9;
+  }
+</style>
