@@ -1,6 +1,6 @@
 ---
-import { client } from "../library/microcms";
-import type { News } from "../library/microcms";
+import { client } from "../lib/microcms";
+import type { News } from "../lib/microcms";
 
 const response = await client.get({ endpoint: "news" });
 const newsList = response.contents;
@@ -8,11 +8,14 @@ const newsList = response.contents;
 
 <section class="news-section">
   <h2>お知らせ</h2>
+  <!-- <pre>{JSON.stringify(newsList, null, 2)}</pre>  -->
+   <!-- 受け取ったデータの確認 -->
   <ul>
     {newsList.map((news: News) => (
       <li>
         <span class="date">{new Date(news.publishedAt).toLocaleDateString()}</span>
         <p>{news.title}</p>
+        <div set:html={news.content} />
       </li>
     ))}
   </ul>

@@ -11,4 +11,8 @@ export type News = {
   title: string;
   content: string;
   image?: { url: string };
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  revisedAt: string
 };
