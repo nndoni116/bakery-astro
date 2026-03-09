@@ -4,7 +4,7 @@ import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
   // Set your production domain here
-  // site: 'https://www.boulangerie-kura.jp',
+  site: 'https://www.boulangerie-kura.jp',
 
   integrations: [
     tailwind({
