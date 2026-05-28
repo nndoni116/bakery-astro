@@ -8,188 +8,164 @@
 // ──────────────────────────────────────────────────────────────
 
 const navLinks = [
-  { label: 'Concept',  href: '#concept'  },
-  { label: 'Breads',   href: '#products' },
-  { label: 'Schedule', href: '#schedule' },
-  { label: 'Access',   href: '#access'   },
+  { label: "Concept", href: "#concept" },
+  { label: "Breads", href: "#products" },
+  { label: "Schedule", href: "#schedule" },
+  { label: "Access", href: "#access" },
 ];
 ---
 
 <!-- Fixed wrapper -->
 <header
   id="site-header"
-  class="fixed inset-x-0 top-0 z-50 transition-all duration-500"
+  class="fixed inset-x-0 top-0 z-50 transition-all duration-500 bg-[#eee4e4]/70 backdrop-blur-md"
 >
   <div class="section-inner flex items-center justify-between py-5">
-
     <!-- ── Logo ── -->
     <a
       href="#"
       class="logo-link relative z-10 flex flex-col leading-none"
-      aria-label="Boulangerie Kura — ホームへ"
+      aria-label="ハードパン — ホームへ"
     >
-      <span class="font-display italic text-wheat-DEFAULT text-[1.45rem] tracking-[0.03em]">
-        Boulangerie Kura
+      <span
+        class="font-display italic text-wheat-DEFAULT text-[1.45rem] tracking-[0.03em]"
+      >
+        ハードパン
       </span>
-      <span class="font-sans text-[0.6rem] tracking-[0.22em] text-wheat-DEFAULT/50 uppercase mt-0.5">
-        ブーランジェリー・クラ
+      <span
+        class="font-sans text-[0.6rem] tracking-[0.22em] text-wheat-DEFAULT/50 uppercase mt-0.5"
+      >
+        HARD-BREAD KANAZAWA
       </span>
     </a>
 
     <!-- ── Desktop Navigation ── -->
-    <nav class="hidden md:flex items-center gap-10" aria-label="メインナビゲーション">
+    <nav
+      class="hidden md:flex items-center gap-10"
+      aria-label="メインナビゲーション"
+    >
       <ul class="flex items-center gap-8 list-none">
-        {navLinks.map(link => (
-          <li>
-            <a
-              href={link.href}
-              class="
-                font-sans text-[0.72rem] uppercase tracking-[0.18em]
-                text-wheat-DEFAULT/75 hover:text-wheat-DEFAULT
-                transition-colors duration-300
-              "
-            >
-              {link.label}
-            </a>
-          </li>
-        ))}
+        {
+          navLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="font-sans text-[0.72rem] uppercase tracking-[0.18em]text-[#2D2926] hover:text-[#a19e9e] transition-colors duration-300"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
       </ul>
-      <!-- CTA pill -->
-      <a
-        href="#access"
-        class="
-          font-sans text-[0.7rem] uppercase tracking-[0.18em]
-          border border-amber-brand/60 text-amber-brand
-          px-5 py-2
-          hover:bg-amber-brand hover:text-kiln-800
-          transition-all duration-300
-        "
-      >
-        来店案内
-      </a>
     </nav>
 
     <!-- ── Hamburger (mobile) ── -->
     <button
       id="hamburger-btn"
-      class="relative z-[60] md:hidden flex flex-col justify-center gap-[5px] w-9 h-9 p-1"
+      class="relative z-[100] md:hidden flex flex-col justify-center gap-[6px] w-10 h-10 p-2"
       aria-label="メニューを開く"
       aria-expanded="false"
     >
-      <span class="ham-bar block w-full h-[1.5px] bg-wheat-DEFAULT transition-all duration-300"></span>
-      <span class="ham-bar block w-full h-[1.5px] bg-wheat-DEFAULT transition-all duration-300"></span>
-      <span class="ham-bar block w-4   h-[1.5px] bg-wheat-DEFAULT transition-all duration-300 ml-auto"></span>
+     <span class="ham-bar block w-full h-[2px] bg-black transition-all duration-300"></span>
+  <span class="ham-bar block w-full h-[2px] bg-black transition-all duration-300"></span>
+  <span class="ham-bar block w-full h-[2px] bg-black transition-all duration-300"></span>
     </button>
-
   </div><!-- /section-inner -->
 </header>
 
 <!-- ── Mobile full-screen overlay ──────────────────────────── -->
 <div
   id="mobile-menu"
-  class="
-    fixed inset-0 z-[55]
+  class="fixed inset-0 z-[55]
     flex flex-col items-center justify-center gap-10
-    bg-kiln-800/[0.97] backdrop-blur-sm
+    bg-[#FAF9F6]/[0.98] backdrop-blur-sm
     opacity-0 pointer-events-none
-    transition-opacity duration-400
-  "
+    transition-opacity duration-400"
   aria-hidden="true"
 >
   <nav aria-label="モバイルナビゲーション">
     <ul class="flex flex-col items-center gap-8 list-none text-center">
-      {navLinks.map(link => (
-        <li>
-          <a
-            href={link.href}
-            class="
+      {
+        navLinks.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class="
               mobile-nav-link
-              font-display italic text-[2.2rem] text-wheat-DEFAULT
+              font-display italic text-[2.2rem] text-[#2D2926]
               tracking-[0.02em] leading-none
               hover:text-amber-brand transition-colors duration-300
             "
-          >
-            {link.label}
-          </a>
-        </li>
-      ))}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
     </ul>
   </nav>
-  <a
-    href="#access"
-    class="
-      mobile-nav-link
-      font-sans text-[0.75rem] uppercase tracking-[0.2em]
-      border border-amber-brand/50 text-amber-brand
-      px-8 py-3 mt-4
-    "
-  >
-    来店案内
-  </a>
 </div>
 
 <script>
-  // ── Scroll: transparent → solid ───────────────────────────
-  const header = document.getElementById('site-header')!;
-
-  function updateHeader() {
-    if (window.scrollY > 60) {
-      header.classList.add('bg-kiln-800/95', 'shadow-nav', 'backdrop-blur-md', 'py-0');
-      header.classList.remove('py-0');
-    } else {
-      header.classList.remove('bg-kiln-800/95', 'shadow-nav', 'backdrop-blur-md');
-    }
-  }
-  updateHeader();
-  window.addEventListener('scroll', updateHeader, { passive: true });
-
-  // ── Hamburger toggle ───────────────────────────────────────
-  const btn  = document.getElementById('hamburger-btn')!;
-  const menu = document.getElementById('mobile-menu')!;
-  const bars = btn.querySelectorAll<HTMLElement>('.ham-bar');
+{
+  const btn = document.getElementById("hamburger-btn");
+  const menu = document.getElementById("mobile-menu");
+  const bars = btn?.querySelectorAll<HTMLElement>(".ham-bar");
 
   function openMenu() {
-    menu.classList.remove('opacity-0', 'pointer-events-none');
-    menu.setAttribute('aria-hidden', 'false');
-    btn.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
-    // Animate bars → ✕
-    bars[0].style.transform = 'translateY(6.5px) rotate(45deg)';
-    bars[1].style.opacity   = '0';
-    bars[2].style.transform = 'translateY(-6.5px) rotate(-45deg) scaleX(1.75)';
-    bars[2].style.marginLeft = '0';
-  }
+  if (!menu || !btn || !bars) return;
+  
+  menu.classList.remove("opacity-0", "pointer-events-none");
+  btn.setAttribute("aria-expanded", "true");
+  document.body.style.overflow = "hidden";
+
+  // 8px → 9px に変更
+  bars[0].style.transform = "translateY(9px) rotate(45deg)";
+  bars[1].style.opacity = "0";
+  bars[2].style.transform = "translateY(-9px) rotate(-45deg)";
+}
+
   function closeMenu() {
-    menu.classList.add('opacity-0', 'pointer-events-none');
-    menu.setAttribute('aria-hidden', 'true');
-    btn.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-    bars[0].style.transform = '';
-    bars[1].style.opacity   = '';
-    bars[2].style.transform = '';
-    bars[2].style.marginLeft = 'auto';
+    if (!menu || !btn || !bars) return;
+
+    menu.classList.add("opacity-0", "pointer-events-none");
+    btn.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
+
+    // 全て元通りに戻す
+    bars[0].style.transform = "";
+    bars[1].style.opacity = "1";
+    bars[2].style.transform = "";
   }
 
-  btn.addEventListener('click', () => {
-    const isOpen = btn.getAttribute('aria-expanded') === 'true';
+  btn?.addEventListener("click", () => {
+    const isOpen = btn.getAttribute("aria-expanded") === "true";
     isOpen ? closeMenu() : openMenu();
   });
 
-  // Close when a link is clicked
-  menu.querySelectorAll<HTMLAnchorElement>('.mobile-nav-link').forEach(link => {
-    link.addEventListener('click', closeMenu);
+  // リンクをクリックしたら閉じる
+  menu?.querySelectorAll(".mobile-nav-link").forEach(link => {
+    link.addEventListener("click", closeMenu);
   });
-
-  // Close on Escape key
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeMenu();
-  });
+}
 </script>
 
 <style>
-  /* Tailwind can't know arbitrary bg-kiln-800/95 unless we add it here too */
+  /* スクロール時の背景（必要であれば） */
   #site-header.scrolled-solid {
     background: rgba(44, 26, 14, 0.95);
     backdrop-filter: blur(10px);
   }
+
+  /* ハンバーガーボタンを常に最前面へ */
+  #hamburger-btn {
+    z-index: 9999 !important;
+  }
+
+  /* メニューが開いているとき、ボタンがよりはっきり見えるようにする設定 */
+  [aria-expanded="true"] .ham-bar {
+    background-color: #000 !important; /* 開いている時は強制的に真っ黒 */
+  }
 </style>
+
