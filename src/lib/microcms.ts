@@ -9,10 +9,12 @@ export const client = createClient({
 export type News = {
   id: string;
   title: string;
-  content: string;
+  slug: string;
+  tag: string;
+  body: string;
   image?: { url: string };
   createdAt: string;
   updatedAt: string;
-  publishedAt: string;
+  publishdate: string;
   revisedAt: string
 };
